@@ -50,12 +50,16 @@ set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 
+configure_file(AStarCities.h.in AStarCities.h)
+
 # List of source files
 set(SOURCE_FILES
     src/main.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})
+
+target_include_directories(${Name} PUBLIC "${PROJECT_BINARY_DIR}")
 
 # SFML
 add_subdirectory(SFML)

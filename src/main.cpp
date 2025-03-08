@@ -1,13 +1,17 @@
 
+#include "AStarCities.h"
+
 #include <iostream>
 
 #include <SFML/Window.hpp>
+
+using namespace asc2;
 
 int main(int argc, const char** args) {
 
     std::cout << "Hallo Welt!" << std::endl;
 
-    sf::Window window(sf::VideoMode({800, 600}), "AStarCities2");
+    sf::Window window(sf::VideoMode({800, 600}), ProgramInfo::name);
 
     while (window.isOpen()) {
 

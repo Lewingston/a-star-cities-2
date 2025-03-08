@@ -1,0 +1,15 @@
+#pragma once
+
+#include <cstdint>
+#include <string>
+
+namespace asc2 {
+
+    struct ProgramInfo {
+
+        static constexpr std::string name = "@Name@";
+        static constexpr uint32_t versionMajor = @AStarCities2_VERSION_MAJOR@;
+        static constexpr uint32_t versionMinor = @AStarCities2_VERSION_MINOR@;
+        static constexpr uint32_t versionPatch = @AStarCities2_VERSION_PATCH@;
+    };
+}
