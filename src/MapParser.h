@@ -21,8 +21,9 @@ namespace asc2 {
 
             struct Way {
                 uint64_t id;
-                std::vector<std::reference_wrapper<Node>> nodes;
+                std::vector<std::reference_wrapper<const Node>> nodes;
                 json data;
+                bool isComplete = false;
             };
 
             MapParser() = default;
@@ -33,7 +34,8 @@ namespace asc2 {
         private:
 
             void parseElements(const json& data);
-            void parseWays();
+            void constructWays();
+            void constructWay(Way& way) const;
 
             void parseNode(const json& data);
             void parseWay(const json& data);

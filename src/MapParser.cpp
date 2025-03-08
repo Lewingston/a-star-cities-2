@@ -25,50 +25,15 @@ void MapParser::parse() {
         throw std::runtime_error("Data does not contain any elements");
 
     try {
-        
+
         parseElements(data);
+        constructWays();
 
     } catch (const std::exception& e) {
         std::cerr << "Json parser error:\n";
         std::cerr << e.what() << '\n';
         throw std::runtime_error("Parser error");
     }
-
-    /*std::size_t totalElementCount = 0;
-    std::size_t noTypeElementCount = 0;
-    std::map<std::string, std::size_t> elementTypeMap;
-
-    for (const auto& element: data["elements"]) {
-
-        totalElementCount += 1;
-
-        if (!element.contains("type")) {
-            noTypeElementCount += 1;
-            continue;
-        }
-
-        if (auto find = elementTypeMap.find(element["type"]); find != elementTypeMap.end()) {
-            find->second++;
-        } else {
-            elementTypeMap.emplace(element["type"], 1);
-        }
-    }
-
-    std::vector<std::pair<std::string, std::size_t>> elementCounts;
-    elementCounts.reserve(elementTypeMap.size());
-    for (const auto& element : elementTypeMap)
-        elementCounts.emplace_back(element);
-
-    std::sort(elementCounts.begin(), elementCounts.end(), [](auto a, auto b) {
-        return a.second > b.second;
-    });
-
-    std::cout << "Total Element Count: " << totalElementCount << '\n';
-
-    for (const auto& element : elementCounts)
-        std::cout << element.first << ": " << element.second << '\n';
-
-    std::cout << "Elements with no type: " << noTypeElementCount << '\n';*/
 }
 
 void MapParser::parseElements(const json& data) {
@@ -100,14 +65,23 @@ void MapParser::parseElements(const json& data) {
         std::cout << "number of elements with unknown type: " << numberOfElementsWithUnknownType << '\n';
     }
 
-    parseWays();
-
     std::cout << "Node count: " << nodes.size() << '\n';
     std::cout << "Way count: " << ways.size() << '\n';
 }
 
-void MapParser::parseWays() {
+void MapParser::constructWays() {
 
+    uint32_t completeCount = 0;
+    uint32_t incompleteCount = 0;
+
+    for (Way& way : ways) {
+        constructWay(way);
+
+        way.isComplete ? completeCount++ : incompleteCount++;
+    }
+
+    std::cout << "Number of complete ways: " << completeCount << '\n';
+    std::cout << "Number of incomplete ways: " << incompleteCount << '\n';
 }
 
 void MapParser::parseNode(const json& data) {
@@ -142,4 +116,27 @@ void MapParser::parseWay(const json& data) {
     };
 
     ways.emplace_back(way);
+}
+
+void MapParser::constructWay(Way& way) const {
+
+    if (!way.data.contains("nodes") || way.data["nodes"].size() == 0) {
+        std::cout << "Way has no nodes:\n" << way.data.dump() << '\n';
+        return;
+    }
+
+    way.isComplete = true;
+    way.nodes.clear();
+    way.nodes.reserve(way.data["nodes"].size());
+
+    for (const auto& node : way.data["nodes"]) {
+
+        const uint64_t nodeId = node.get<uint64_t>();
+
+        if (auto find = nodes.find(nodeId); find != nodes.end()) {
+            way.nodes.emplace_back(find->second);
+        } else {
+            way.isComplete = false;
+        }
+    }
 }
