@@ -62,9 +62,12 @@ add_executable(${Name} ${SOURCE_FILES})
 target_include_directories(${Name} PUBLIC "${PROJECT_BINARY_DIR}")
 
 # SFML
-add_subdirectory(SFML)
+add_subdirectory(libs/SFML)
 target_link_libraries(${Name} sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
-include_directories(SYSTEM SFML/include)
+include_directories(SYSTEM libs/SFML/include)
+
+# nlohmann json parser
+include_directories(SYSTEM libs/json/include)
 
 # Custom target to run the application
 add_custom_target(test

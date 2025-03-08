@@ -1,0 +1,1 @@
+/usr/bin/curl --data "@requestAllDataInArea" https://overpass-api.de/api/interpreter
