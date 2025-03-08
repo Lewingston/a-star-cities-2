@@ -55,6 +55,7 @@ configure_file(AStarCities.h.in AStarCities.h)
 # List of source files
 set(SOURCE_FILES
     src/main.cpp
+    src/MapParser.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})
@@ -67,7 +68,7 @@ target_link_libraries(${Name} sfml-system sfml-window sfml-graphics sfml-network
 include_directories(SYSTEM libs/SFML/include)
 
 # nlohmann json parser
-include_directories(SYSTEM libs/json/include)
+include_directories(SYSTEM libs/json/single_include)
 
 # Custom target to run the application
 add_custom_target(test
