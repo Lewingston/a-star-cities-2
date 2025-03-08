@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Map/Map.h"
+
 #include <nlohmann/json.hpp>
 
 #include <string>
+#include <memory>
 
 using json = nlohmann::json;
 
@@ -12,26 +15,25 @@ namespace asc2 {
 
         public:
 
-            struct Node {
-                const uint64_t id;
-                const double   lon;
-                const double   lat;
-                const json     data;
-            };
-
-            struct Way {
-                uint64_t id;
-                std::vector<std::reference_wrapper<const Node>> nodes;
-                json data;
-                bool isComplete = false;
-            };
-
             MapParser() = default;
 
             void loadFromFile(const std::string& filePath);
             void parse();
 
         private:
+
+            struct Node {
+                const uint64_t id;
+                const json     data;
+            };
+
+            struct Way  {
+                const uint64_t id;
+                const json     data;
+                bool isComplete = false;
+            };
+
+            void parseNodes(const json& data);
 
             void parseElements(const json& data);
             void constructWays();
@@ -40,9 +42,13 @@ namespace asc2 {
             void parseNode(const json& data);
             void parseWay(const json& data);
 
+            [[nodiscard]] static std::vector<uint64_t> getIdArray(const json& json);
+
             json data;
 
             std::map<uint64_t, Node> nodes;
-            std::vector<Way> ways;
+            std::map<uint64_t, Way>  ways;
+
+            std::unique_ptr<Map> map;
     };
 }

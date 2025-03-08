@@ -24,6 +24,8 @@ void MapParser::parse() {
     if (!data["elements"].is_array())
         throw std::runtime_error("Data does not contain any elements");
 
+    map = std::make_unique<Map>();
+
     try {
 
         parseElements(data);
@@ -74,7 +76,8 @@ void MapParser::constructWays() {
     uint32_t completeCount = 0;
     uint32_t incompleteCount = 0;
 
-    for (Way& way : ways) {
+    for (auto [id, way] : ways) {
+
         constructWay(way);
 
         way.isComplete ? completeCount++ : incompleteCount++;
@@ -86,22 +89,21 @@ void MapParser::constructWays() {
 
 void MapParser::parseNode(const json& data) {
 
-    const uint64_t id = data["id"];
-    const double lon  = data["lon"];
-    const double lat  = data["lat"];
+    const uint64_t id  = data["id"];
+    const double   lon = data["lon"];
+    const double   lat = data["lat"];
 
-    const Node node {
-        .id   = id,
-        .lon  = lon,
-        .lat  = lat,
-        .data = data
-    };
+    map->addNode({
+        .id  = id,
+        .lon = lon,
+        .lat = lat
+    });
 
-    const auto [iter, success] = nodes.emplace(id, node);
+    const auto [iter, success] = nodes.emplace(id, Node{id, data});
     if (!success) {
-        std::cerr << "Duplicate nodes: \n";
+        std::cerr << "Duplicate node ids:\n";
         std::cerr << iter->second.data.dump() << '\n';
-        std::cerr << node.data.dump() << '\n';
+        std::cerr << data.dump() << '\n';
     }
 }
 
@@ -110,12 +112,16 @@ void MapParser::parseWay(const json& data) {
     const uint64_t id = data["id"];
 
     const Way way {
-        .id    = id,
-        .nodes = {},
-        .data  = data
+        .id      = id,
+        .data    = data
     };
 
-    ways.emplace_back(way);
+    const auto [iter, success] = ways.emplace(id, way);
+    if (!success) {
+        std::cerr << "Duplicate way ids:\n";
+        std::cerr << iter->second.data.dump() << '\n';
+        std::cerr << data.dump() << '\n';
+    }
 }
 
 void MapParser::constructWay(Way& way) const {
@@ -125,18 +131,34 @@ void MapParser::constructWay(Way& way) const {
         return;
     }
 
-    way.isComplete = true;
-    way.nodes.clear();
-    way.nodes.reserve(way.data["nodes"].size());
+    const auto nodes = map->getNodes(getIdArray(way.data["nodes"]));
 
-    for (const auto& node : way.data["nodes"]) {
+    way.isComplete = nodes.size() == way.data["nodes"].size();
 
-        const uint64_t nodeId = node.get<uint64_t>();
+    map->addWay({
+        .id         = way.id,
+        .nodes      = nodes,
+        .isComplete = way.isComplete
+    });
+}
 
-        if (auto find = nodes.find(nodeId); find != nodes.end()) {
-            way.nodes.emplace_back(find->second);
-        } else {
-            way.isComplete = false;
-        }
+std::vector<uint64_t> MapParser::getIdArray(const json& data) {
+
+    if (!data.is_array()) {
+        std::cerr << "Failed to get array of ids. Element is not an array!\n";
+        return {};
     }
+
+    std::vector<uint64_t> ids;
+    ids.reserve(data.size());
+
+    for (const auto& id : data) {
+        if (!id.is_number_integer()) {
+            std::cerr << "Failed to get array of ids. Array contains invalid elements.\n";
+            return {};
+        }
+        ids.emplace_back(id.get<uint64_t>());
+    }
+
+    return ids;
 }

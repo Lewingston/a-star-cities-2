@@ -56,6 +56,9 @@ configure_file(AStarCities.h.in AStarCities.h)
 set(SOURCE_FILES
     src/main.cpp
     src/MapParser.cpp
+    src/Map/Map.cpp
+    src/Map/Node.cpp
+    src/Map/Way.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})

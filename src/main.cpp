@@ -12,7 +12,7 @@ int main(int argc, const char** args) {
 
     try {
         MapParser parser;
-        parser.loadFromFile("../../test.json");
+        parser.loadFromFile("../../bingen.json");
         parser.parse();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
