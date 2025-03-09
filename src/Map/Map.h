@@ -12,7 +12,7 @@ namespace asc2 {
 
         public:
 
-            using ProjectionFunction = std::function<std::pair<double, double>(std::pair<double, double>)>;
+            using ProjectionFunction = std::function<std::pair<double, double>(double, double)>;
 
             Map() = default;
 

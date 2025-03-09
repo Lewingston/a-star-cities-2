@@ -27,7 +27,7 @@ void Map::applyProjection(ProjectionFunction projector) {
 
     for (auto& [id, node] : nodes) {
 
-        node.setProjectedPosition(projector({node.lon, node.lat}));
+        node.setProjectedPosition(projector(node.lon, node.lat));
     }
 }
 
