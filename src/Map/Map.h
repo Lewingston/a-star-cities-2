@@ -22,8 +22,6 @@ namespace asc2 {
 
             void setCenter(std::pair<double, double> center) { this->center = center; }
 
-            void applyProjection(ProjectionFunction projector);
-
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& nodeIds);
 

@@ -60,14 +60,14 @@ void Window::draw() {
 
 void Window::drawCenter() {
 
-    const float size = 15.0f;
+    const float size = 180.0f / 40'000'000 * 15.0f;
     const sf::Color color = sf::Color::Red;
 
     std::array center = {
-        sf::Vertex{sf::Vector2f(size, size), color},
-        sf::Vertex{sf::Vector2f(-size, -size), color},
-        sf::Vertex(sf::Vector2f(-size, size), color),
-        sf::Vertex(sf::Vector2f(size, -size), color)
+        sf::Vertex{sf::Vector2f(size, size) + mapCenter, color},
+        sf::Vertex{sf::Vector2f(-size, -size) + mapCenter, color},
+        sf::Vertex(sf::Vector2f(-size, size) + mapCenter, color),
+        sf::Vertex(sf::Vector2f(size, -size) + mapCenter, color)
     };
 
     window.draw(center.data(), center.size(), sf::PrimitiveType::Lines);
@@ -77,6 +77,7 @@ void Window::onResize(uint32_t newWidth, uint32_t newHeight) {
 
     auto view = window.getView();
     view.setSize(sf::Vector2f(static_cast<float>(newWidth), static_cast<float>(newHeight)));
+    view.zoom(zoom);
     window.setView(view);
 }
 
@@ -92,6 +93,8 @@ void Window::onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent) 
 
     const sf::Vector2f oldMousePos = window.mapPixelToCoords(mouseWheelEvent.position);
     
+    this->zoom *= zoom;
+
     view.zoom(zoom);
     window.setView(view);
 
@@ -123,8 +126,12 @@ void Window::renderMap(const Map& map) {
 
     std::cout << "Line Count: " << lineBuffer->getNumberOfLines() << '\n';
 
+    mapCenter = {static_cast<float>(map.getCenter().first), -static_cast<float>(map.getCenter().second)};
+
+    zoom = 180.0f / 40'000'000.0f;
+
     auto view = window.getView();
-    //view.setCenter({static_cast<float>(map.getCenter().first), static_cast<float>(map.getCenter().second)});
-    view.setCenter({0.0f, 0.0f});
+    view.setCenter(mapCenter);
+    view.zoom(zoom);
     window.setView(view);
 }

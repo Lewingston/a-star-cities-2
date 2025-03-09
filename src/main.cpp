@@ -14,14 +14,15 @@ int main(int argc, const char** args) {
     std::unique_ptr<Map> map;
 
     try {
-        MapParser parser("../../maps/budesheim.json");
+        MapParser parser("../../maps/bingen_umgebung.json");
+        //MapParser parser("../../maps/budesheim.json");
         map = parser.parse();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return 1;
     }
 
-    Projector::project(*map);
+    //Projector::project(*map);
 
     Window window(800, 600, ProgramInfo::name);
     window.renderMap(*map);

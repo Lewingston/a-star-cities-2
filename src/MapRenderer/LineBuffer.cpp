@@ -8,6 +8,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <numeric>
+#include <iostream>
 
 using namespace asc2;
 
@@ -31,7 +32,10 @@ LineBuffer::LineBuffer(const std::map<uint64_t, Way>& ways) {
 
     for (const auto& [id, way] : ways) {
 
-        if (!way.isComplete)
+        //if (!way.isComplete)
+        //    continue;
+        
+        if (way.getNodeCount() <= 1)
             continue;
 
         addWayToVertexArray(way, vertexArray);
@@ -45,12 +49,10 @@ LineBuffer::LineBuffer(const std::map<uint64_t, Way>& ways) {
 void LineBuffer::addWayToVertexArray(const Way& way,
                                      std::vector<sf::Vertex>& vertexArray) const {
 
-    vertexArray.reserve(vertexArray.size() + way.getLineCount() * 2);
-
     for (auto iter = way.nodes.begin(); iter != way.nodes.end(); iter++) {
 
-        const auto pos = sf::Vector2f{static_cast<float>(iter->get().x),
-                                      static_cast<float>(iter->get().y)};
+        const auto pos = sf::Vector2f{static_cast<float>(iter->get().lon),
+                                      -static_cast<float>(iter->get().lat)};
 
         const auto color = way.isComplete ? sf::Color::Black : sf::Color::Red;
 

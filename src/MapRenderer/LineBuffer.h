@@ -18,11 +18,17 @@ namespace asc2 {
 
             void draw(sf::RenderTarget& target);
 
+            [[nodiscard]] std::size_t getNumberOfLines() const noexcept {
+                return vertexBuffer.getVertexCount() / 2;
+            }
+
         private:
 
             sf::VertexBuffer vertexBuffer;
 
             void addWayToVertexArray(const Way& way,
                                      std::vector<sf::Vertex>& vertexArray) const;
+
+            
     };
 }

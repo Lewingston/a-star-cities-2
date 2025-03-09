@@ -33,5 +33,9 @@ namespace asc2 {
 
             sf::Vector2i mousePosition;
 
+            sf::Vector2f mapCenter;
+
+            float zoom = 1.0f;
+
     };
 }
