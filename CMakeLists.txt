@@ -60,6 +60,7 @@ set(SOURCE_FILES
     src/Map/Map.cpp
     src/Map/Node.cpp
     src/Map/Way.cpp
+    src/MapRenderer/LineBuffer.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})

@@ -12,5 +12,8 @@ namespace asc2 {
         uint64_t id;
         std::vector<std::reference_wrapper<const Node>> nodes;
         bool isComplete = false;
+
+        [[nodiscard]] std::size_t getNodeCount() const noexcept { return nodes.size(); }
+        [[nodiscard]] std::size_t getLineCount() const noexcept { return nodes.size() - 1; }
     };
 }

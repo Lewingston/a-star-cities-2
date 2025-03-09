@@ -16,7 +16,7 @@ void Projector::project(Map& map) {
 
     auto func = [&](double lon, double lat) -> std::pair<double, double> {
 
-        const double posY = distance(lat - center.second, EARTH_RAD);
+        const double posY = -distance(lat - center.second, EARTH_RAD);
         const double posX = distance(lon - center.first, getRadAtLat(lat));
 
         return {posX, posY};
