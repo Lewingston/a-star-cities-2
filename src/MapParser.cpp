@@ -7,6 +7,11 @@
 
 using namespace asc2;
 
+MapParser::MapParser(const std::string& filePath) {
+
+    loadFromFile(filePath);
+}
+
 void MapParser::loadFromFile(const std::string& filePath) {
 
     std::ifstream input(filePath);
@@ -16,7 +21,7 @@ void MapParser::loadFromFile(const std::string& filePath) {
     data = json::parse(input);
 }
 
-void MapParser::parse() {
+std::unique_ptr<Map> MapParser::parse() {
 
     if (!data.contains("elements"))
         throw std::runtime_error("Data does not contain any elements");
@@ -36,6 +41,8 @@ void MapParser::parse() {
         std::cerr << e.what() << '\n';
         throw std::runtime_error("Parser error");
     }
+
+    return std::move(map);
 }
 
 void MapParser::parseElements(const json& data) {
@@ -59,6 +66,8 @@ void MapParser::parseElements(const json& data) {
         }
     }
 
+    map->setCenter(dimensions.getCenter());
+
     if (numberOfElementsWithNoType > 0) {
         std::cout << "Number of elements without type: " << numberOfElementsWithNoType << '\n';
     }
@@ -69,6 +78,8 @@ void MapParser::parseElements(const json& data) {
 
     std::cout << "Node count: " << nodes.size() << '\n';
     std::cout << "Way count: " << ways.size() << '\n';
+
+    std::cout << "Map center: " << map->getCenter().second << " / " << map->getCenter().first << '\n';
 }
 
 void MapParser::constructWays() {
@@ -99,6 +110,8 @@ void MapParser::parseNode(const json& data) {
         .lat = lat
     });
 
+    dimensions.adjust(lon, lat);
+
     const auto [iter, success] = nodes.emplace(id, Node{id, data});
     if (!success) {
         std::cerr << "Duplicate node ids:\n";
@@ -112,8 +125,8 @@ void MapParser::parseWay(const json& data) {
     const uint64_t id = data["id"];
 
     const Way way {
-        .id      = id,
-        .data    = data
+        .id   = id,
+        .data = data
     };
 
     const auto [iter, success] = ways.emplace(id, way);
@@ -161,4 +174,29 @@ std::vector<uint64_t> MapParser::getIdArray(const json& data) {
     }
 
     return ids;
+}
+
+/************************************************************/
+/*                struct MapParser::Dimensions              */
+/************************************************************/
+
+void MapParser::Dimensions::adjust(double lon, double lat) {
+
+    if (lon < minLon)
+        minLon = lon;
+    else if (lon > maxLon)
+        maxLon = lon;
+
+    if (lat < minLat)
+        minLat = lat;
+    else if (lat > maxLat)
+        maxLat = lat;
+}
+
+std::pair<double, double> MapParser::Dimensions::getCenter() const {
+
+    const double lon = minLon + (maxLon - minLon) / 2;
+    const double lat = minLat + (maxLat - minLat) / 2;
+
+    return {lon, lat};
 }

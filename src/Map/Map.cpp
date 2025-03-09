@@ -23,6 +23,14 @@ void Map::addWay(const Way& way) {
     }
 }
 
+void Map::applyProjection(ProjectionFunction projector) {
+
+    for (auto& [id, node] : nodes) {
+
+        node.setProjectedPosition(projector({node.lon, node.lat}));
+    }
+}
+
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     const std::vector<uint64_t>& nodeIds) {
 

@@ -1,6 +1,7 @@
 
 #include "AStarCities.h"
 #include "MapParser.h"
+#include "Map/Map.h"
 
 #include <iostream>
 
@@ -10,10 +11,11 @@ using namespace asc2;
 
 int main(int argc, const char** args) {
 
+    std::unique_ptr<Map> map;
+
     try {
-        MapParser parser;
-        parser.loadFromFile("../../bingen.json");
-        parser.parse();
+        MapParser parser("../../bingen.json");
+        map = parser.parse();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return 1;

@@ -15,10 +15,9 @@ namespace asc2 {
 
         public:
 
-            MapParser() = default;
+            MapParser(const std::string& filePath);
 
-            void loadFromFile(const std::string& filePath);
-            void parse();
+            std::unique_ptr<Map> parse();
 
         private:
 
@@ -32,6 +31,18 @@ namespace asc2 {
                 const json     data;
                 bool isComplete = false;
             };
+
+            struct Dimensions {
+                double minLon = 180.0f;
+                double maxLon = 0.0f;
+                double minLat = 90.0;
+                double maxLat = 0.0;
+
+                void adjust(double lon, double lat);
+                std::pair<double, double> getCenter() const;
+            };
+
+            void loadFromFile(const std::string& filePath);
 
             void parseNodes(const json& data);
 
@@ -50,5 +61,7 @@ namespace asc2 {
             std::map<uint64_t, Way>  ways;
 
             std::unique_ptr<Map> map;
+
+            Dimensions dimensions;
     };
 }
