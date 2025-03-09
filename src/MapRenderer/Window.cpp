@@ -2,11 +2,14 @@
 #include "Window.h"
 #include "../Map/Map.h"
 
+#include <iostream>
+
 using namespace asc2;
 
 Window::Window(uint32_t width, uint32_t height, const std::string& title) :
     window(sf::VideoMode({width, height}), title) {
 
+    window.setFramerateLimit(60u);
 }
 
 void Window::show() {
@@ -32,6 +35,14 @@ void Window::onEvent(const sf::Event& event) {
     } else if (const auto* resized = event.getIf<sf::Event::Resized>()) {
 
         onResize(resized->size.x, resized->size.y);
+
+    } else if (const auto* mouseWheel = event.getIf<sf::Event::MouseWheelScrolled>()) {
+
+        onMouseWheel(*mouseWheel);
+
+    } else if (const auto* mouseMove = event.getIf<sf::Event::MouseMoved>()) {
+
+        onMouseMoved(*mouseMove);
     }
 }
 
@@ -42,7 +53,24 @@ void Window::draw() {
     if (lineBuffer)
         lineBuffer->draw(window);
 
+    drawCenter();
+
     window.display();
+}
+
+void Window::drawCenter() {
+
+    const float size = 15.0f;
+    const sf::Color color = sf::Color::Red;
+
+    std::array center = {
+        sf::Vertex{sf::Vector2f(size, size), color},
+        sf::Vertex{sf::Vector2f(-size, -size), color},
+        sf::Vertex(sf::Vector2f(-size, size), color),
+        sf::Vertex(sf::Vector2f(size, -size), color)
+    };
+
+    window.draw(center.data(), center.size(), sf::PrimitiveType::Lines);
 }
 
 void Window::onResize(uint32_t newWidth, uint32_t newHeight) {
@@ -52,7 +80,51 @@ void Window::onResize(uint32_t newWidth, uint32_t newHeight) {
     window.setView(view);
 }
 
+void Window::onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent) {
+
+    auto view = window.getView();
+
+    const float zoomSpeed = 0.2f;
+    float zoom = mouseWheelEvent.delta * -(1.0f + zoomSpeed);
+
+    if (zoom < 0)
+        zoom = -1.0f / zoom;
+
+    const sf::Vector2f oldMousePos = window.mapPixelToCoords(mouseWheelEvent.position);
+    
+    view.zoom(zoom);
+    window.setView(view);
+
+    // make sure mouse stays over the same position while zooming
+    const sf::Vector2f newMousePos = window.mapPixelToCoords(mouseWheelEvent.position);
+    view.move(oldMousePos - newMousePos);
+    window.setView(view);
+}
+
+void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+
+        auto view = window.getView();
+
+        const auto oldPos = window.mapPixelToCoords(mousePosition);
+        const auto newPos = window.mapPixelToCoords(mouseMovedEvent.position);
+
+        view.move(oldPos - newPos);
+        window.setView(view);
+    }
+
+    mousePosition = mouseMovedEvent.position;
+}
+
 void Window::renderMap(const Map& map) {
 
     lineBuffer = std::make_unique<LineBuffer>(map.getAllWays());
+
+    std::cout << "Line Count: " << lineBuffer->getNumberOfLines() << '\n';
+
+    auto view = window.getView();
+    //view.setCenter({static_cast<float>(map.getCenter().first), static_cast<float>(map.getCenter().second)});
+    view.setCenter({0.0f, 0.0f});
+    window.setView(view);
 }
