@@ -1,6 +1,9 @@
 
 #include "MapParser.h"
 
+//#include "Map/RoadType.h"
+#include "Map/Road.h"
+
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -35,6 +38,7 @@ std::unique_ptr<Map> MapParser::parse() {
 
         parseElements(data);
         constructWays();
+        parseWayTypes();
 
     } catch (const std::exception& e) {
         std::cerr << "Json parser error:\n";
@@ -153,6 +157,32 @@ void MapParser::constructWay(Way& way) const {
         .nodes      = nodes,
         .isComplete = way.isComplete
     });
+}
+
+void MapParser::parseWayTypes() {
+
+    for (const auto& [id, way] : ways) {
+
+        if (wayIsHighway(way)) {
+            parseHighway(way);
+        }
+    }
+}
+
+bool MapParser::wayIsHighway(const Way& way) const {
+
+    if (!way.data.contains("tags")) {
+        return false;
+    }
+
+    return way.data["tags"].contains("highway");
+}
+
+void MapParser::parseHighway(const Way& way) {
+
+    const RoadType type(way.data["tags"]["highway"].get<std::string>());
+
+    map->addRoad(type, way.id);
 }
 
 std::vector<uint64_t> MapParser::getIdArray(const json& data) {

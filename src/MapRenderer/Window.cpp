@@ -124,6 +124,15 @@ void Window::renderMap(const Map& map) {
 
     lineBuffer = std::make_unique<LineBuffer>(map.getAllWays());
 
+    /*std::vector<std::reference_wrapper<const Way>> roadWays;
+    roadWays.reserve(map.getAllRoads().size());
+
+    for (const Road& road : map.getAllRoads()) {
+        roadWays.emplace_back(road.getWay());
+    }
+
+    lineBuffer = std::make_unique<LineBuffer>(roadWays);*/
+
     std::cout << "Line Count: " << lineBuffer->getNumberOfLines() << '\n';
 
     mapCenter = {static_cast<float>(map.getCenter().first), -static_cast<float>(map.getCenter().second)};

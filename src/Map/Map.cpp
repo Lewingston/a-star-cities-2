@@ -23,6 +23,15 @@ void Map::addWay(const Way& way) {
     }
 }
 
+void Map::addRoad(RoadType type, uint64_t wayId) {
+
+    if (auto find = ways.find(wayId); find != ways.end()) {
+        roads.push_back(Road(type, find->second));
+    } else {
+        std::cerr << "Failed to add road with id: " << wayId << " Way not found!\n";
+    }
+}
+
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     const std::vector<uint64_t>& nodeIds) {
 

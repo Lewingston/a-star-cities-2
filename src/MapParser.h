@@ -53,6 +53,10 @@ namespace asc2 {
             void parseNode(const json& data);
             void parseWay(const json& data);
 
+            void parseWayTypes();
+            [[nodiscard]] bool wayIsHighway(const Way& way) const;
+            void parseHighway(const Way& way);
+
             [[nodiscard]] static std::vector<uint64_t> getIdArray(const json& json);
 
             json data;

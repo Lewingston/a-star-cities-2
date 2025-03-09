@@ -14,6 +14,8 @@ namespace asc2 {
 
         public:
 
+            LineBuffer(const std::vector<std::reference_wrapper<const Way>>& ways);
+
             LineBuffer(const std::map<uint64_t, Way>& ways);
 
             void draw(sf::RenderTarget& target);
@@ -26,9 +28,16 @@ namespace asc2 {
 
             sf::VertexBuffer vertexBuffer;
 
+            std::vector<sf::Vertex> vertexArray;
+
+            void initVertexBuffer(std::size_t vertexCount);
+
+            [[nodiscard]] bool wayIsSuitableForRendering(const Way& way) const;
+
             void addWayToVertexArray(const Way& way,
                                      std::vector<sf::Vertex>& vertexArray) const;
 
-            
+            void updateVertexBuffer();
+
     };
 }

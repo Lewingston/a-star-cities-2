@@ -12,38 +12,75 @@
 
 using namespace asc2;
 
+LineBuffer::LineBuffer(const std::vector<std::reference_wrapper<const Way>>& ways) {
+
+    const std::size_t lineCount = std::accumulate(ways.begin(), ways.end(), 0u,
+        [](std::size_t sum, const auto& way) {
+            return sum + way.get().getLineCount();
+        });
+
+    initVertexBuffer(lineCount * 2);
+
+    for (const auto& way : ways) {
+
+        if (!wayIsSuitableForRendering(way))
+            continue;
+
+        addWayToVertexArray(way, vertexArray);
+    }
+
+    updateVertexBuffer();
+}
+
 LineBuffer::LineBuffer(const std::map<uint64_t, Way>& ways) {
 
     const std::size_t lineCount = std::accumulate(ways.begin(), ways.end(), 0u,
         [](std::size_t sum, const auto& way) {
-
             return sum + way.second.getLineCount();
         });
 
-    if (!vertexBuffer.create(lineCount)) {
+    initVertexBuffer(lineCount * 2);
+
+    for (const auto& [id, way] : ways) {
+
+        if (!wayIsSuitableForRendering(way))
+            continue;
+
+        addWayToVertexArray(way, vertexArray);
+    }
+
+    updateVertexBuffer();
+}
+
+void LineBuffer::initVertexBuffer(std::size_t vertexCount) {
+
+    if (!vertexBuffer.create(vertexCount)) {
         throw std::runtime_error("Failed to create vertex buffer!");
     }
 
     vertexBuffer.setUsage(sf::VertexBuffer::Usage::Static);
     vertexBuffer.setPrimitiveType(sf::PrimitiveType::Lines);
 
-    std::vector<sf::Vertex> vertexArray;
-    vertexArray.reserve(lineCount);
+    vertexArray.clear();
+    vertexArray.reserve(vertexCount);
+}
 
-    for (const auto& [id, way] : ways) {
+void LineBuffer::updateVertexBuffer() {
 
-        //if (!way.isComplete)
-        //    continue;
-        
-        if (way.getNodeCount() <= 1)
-            continue;
-
-        addWayToVertexArray(way, vertexArray);
+    if (!vertexBuffer.update(vertexArray.data(), vertexArray.size(), 0)) {
+        throw std::runtime_error("Failed to udpate vertex buffer!");
     }
+}
 
-    if (!vertexBuffer.update(vertexArray.data())) {
-        throw std::runtime_error("Failed to initialize vertex buffer!");
-    }
+bool LineBuffer::wayIsSuitableForRendering(const Way& way) const {
+
+    if (!way.isComplete)
+        return false;
+
+    if (way.getNodeCount() <= 1)
+        return false;
+
+    return true;
 }
 
 void LineBuffer::addWayToVertexArray(const Way& way,
