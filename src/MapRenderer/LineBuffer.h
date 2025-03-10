@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/VertexBuffer.hpp>
+#include <SFML/Graphics/Vertex.hpp>
 
 #include <map>
 #include <cstdint>

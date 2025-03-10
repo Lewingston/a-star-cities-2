@@ -28,7 +28,16 @@ void Map::addRoad(RoadType type, uint64_t wayId) {
     if (auto find = ways.find(wayId); find != ways.end()) {
         roads.push_back(Road(type, find->second));
     } else {
-        std::cerr << "Failed to add road with id: " << wayId << " Way not found!\n";
+        std::cerr << "Failed to add road with id: " << wayId << " - Way not found!\n";
+    }
+}
+
+void Map::addBuilding(BuildingType type, uint64_t wayId) {
+
+    if (auto find = ways.find(wayId); find != ways.end()) {
+        buildings.push_back(Building(type, find->second));
+    } else {
+        std::cerr << "Failed to add building with id: " << wayId << " - Way not found!\n";
     }
 }
 
@@ -46,14 +55,4 @@ std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     }
 
     return nodes;
-}
-
-const std::map<uint64_t, Node>& Map::getAllNodes() const noexcept {
-
-    return nodes;
-}
-
-const std::map<uint64_t, Way>& Map::getAllWays() const noexcept {
-
-    return ways;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LineBuffer.h"
+#include "MapRenderer.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -21,6 +22,8 @@ namespace asc2 {
 
             sf::RenderWindow window;
 
+            MapRenderer mapRenderer;
+
             void onEvent(const sf::Event& event);
             void onResize(uint32_t newWidth, uint32_t newHeight);
             void onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent);
@@ -28,8 +31,6 @@ namespace asc2 {
 
             void draw();
             void drawCenter();
-
-            std::unique_ptr<LineBuffer> lineBuffer;
 
             sf::Vector2i mousePosition;
 

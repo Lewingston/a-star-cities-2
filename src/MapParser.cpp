@@ -1,8 +1,8 @@
 
 #include "MapParser.h"
 
-//#include "Map/RoadType.h"
-#include "Map/Road.h"
+#include "Map/RoadType.h"
+#include "Map/BuildingType.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,6 +22,8 @@ void MapParser::loadFromFile(const std::string& filePath) {
         throw std::runtime_error("Failed to open file: " + filePath);
 
     data = json::parse(input);
+
+    std::cout << "Json file: " << filePath << " loaded.\n";
 }
 
 std::unique_ptr<Map> MapParser::parse() {
@@ -165,6 +167,8 @@ void MapParser::parseWayTypes() {
 
         if (wayIsHighway(way)) {
             parseHighway(way);
+        } else if (wayIsBuilding(way)) {
+            parseBuilding(way);
         }
     }
 }
@@ -183,6 +187,21 @@ void MapParser::parseHighway(const Way& way) {
     const RoadType type(way.data["tags"]["highway"].get<std::string>());
 
     map->addRoad(type, way.id);
+}
+
+bool MapParser::wayIsBuilding(const Way& way) const {
+
+    if (!way.data.contains("tags"))
+        return false;
+
+    return way.data["tags"].contains("building");
+}
+
+void MapParser::parseBuilding(const Way& way) {
+
+    const BuildingType type(way.data["tags"]["building"].get<std::string>());
+
+    map->addBuilding(type, way.id);
 }
 
 std::vector<uint64_t> MapParser::getIdArray(const json& data) {

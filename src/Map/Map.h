@@ -3,6 +3,7 @@
 #include "Node.h"
 #include "Way.h"
 #include "Road.h"
+#include "Building.h"
 
 #include <map>
 #include <functional>
@@ -22,16 +23,18 @@ namespace asc2 {
             void addWay(const Way& way);
 
             void addRoad(RoadType type, uint64_t wayId);
+            void addBuilding(BuildingType type, uint64_t wayId);
 
             void setCenter(std::pair<double, double> center) { this->center = center; }
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& nodeIds);
 
-            [[nodiscard]] const std::map<uint64_t, Node>& getAllNodes() const noexcept;
-            [[nodiscard]] const std::map<uint64_t, Way>&  getAllWays()  const noexcept;
+            [[nodiscard]] const std::map<uint64_t, Node>& getAllNodes() const noexcept { return nodes; }
+            [[nodiscard]] const std::map<uint64_t, Way>&  getAllWays()  const noexcept { return ways;  }
 
-            [[nodiscard]] const std::vector<Road>& getAllRoads() const noexcept { return roads; }
+            [[nodiscard]] const std::vector<Road>&     getAllRoads()     const noexcept { return roads;     }
+            [[nodiscard]] const std::vector<Building>& getAllBuildings() const noexcept { return buildings; }
 
             [[nodiscard]] const std::pair<double, double>& getCenter() const noexcept { return center; }
 
@@ -41,6 +44,7 @@ namespace asc2 {
             std::map<uint64_t, Way>  ways;
 
             std::vector<Road> roads;
+            std::vector<Building> buildings;
 
             std::pair<double, double> center;
 
