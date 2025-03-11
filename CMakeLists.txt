@@ -55,20 +55,21 @@ configure_file(AStarCities.h.in AStarCities.h)
 # List of source files
 set(SOURCE_FILES
     src/main.cpp
-    src/MapParser/MapParser.cpp
-    src/MapParser/NodeParser.cpp
-    src/MapParser/WayParser.cpp
-    src/MapParser/ParserUtils.cpp
     src/Map/Map.cpp
     src/Map/Node.cpp
     src/Map/Way.cpp
-    src/MapRenderer/LineBuffer.cpp
-    src/MapRenderer/Window.cpp
-    src/MapRenderer/MapRenderer.cpp
+    src/Map/MapFeatureType.cpp
     src/Map/RoadType.cpp
     src/Map/Road.cpp
     src/Map/BuildingType.cpp
     src/Map/Building.cpp
+    src/MapParser/MapParser.cpp
+    src/MapParser/NodeParser.cpp
+    src/MapParser/WayParser.cpp
+    src/MapParser/ParserUtils.cpp
+    src/MapRenderer/LineBuffer.cpp
+    src/MapRenderer/Window.cpp
+    src/MapRenderer/MapRenderer.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})

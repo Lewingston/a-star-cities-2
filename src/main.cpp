@@ -1,7 +1,6 @@
 
 #include "AStarCities.h"
-#include "MapParser.h"
-#include "Projector.h"
+#include "MapParser/MapParser.h"
 #include "Map/Map.h"
 #include "MapRenderer/Window.h"
 
@@ -13,16 +12,23 @@ int main(int argc, const char** args) {
 
     std::unique_ptr<Map> map;
 
+    MapParserConfig parserConfig {
+        .mapFeatures = {
+            MapFeatureType::BUILDING,
+            MapFeatureType::HIGHWAY,
+            MapFeatureType::RAILWAY,
+        }
+    };
+
     try {
-        MapParser parser("../../maps/bingen_umgebung.json");
+        MapParser parser("../../maps/speyer.json", parserConfig);
+        //MapParser parser("../../maps/bingen_umgebung.json");
         //MapParser parser("../../maps/budesheim.json");
         map = parser.parse();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return 1;
     }
-
-    //Projector::project(*map);
 
     Window window(800, 600, ProgramInfo::name);
     window.renderMap(*map);

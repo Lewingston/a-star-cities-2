@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MapParserConfig.h"
 #include "NodeParser.h"
 #include "WayParser.h"
 #include "../Map/Map.h"
@@ -20,7 +21,7 @@ namespace asc2 {
             using Node = NodeParser::Node;
             using Way  = WayParser::Way;
 
-            MapParser(const std::string& filePath);
+            MapParser(const std::string& filePath, const MapParserConfig& config);
 
             std::unique_ptr<Map> parse();
 
@@ -49,6 +50,8 @@ namespace asc2 {
             [[nodiscard]] bool wayIsBuilding(const Way& way) const;
             void parseHighway(const Way& way);
             void parseBuilding(const Way& way);
+
+            MapParserConfig config;
 
             json data;
 

@@ -9,7 +9,9 @@
 
 using namespace asc2;
 
-MapParser::MapParser(const std::string& filePath) {
+MapParser::MapParser(const std::string& filePath, const MapParserConfig& config) :
+    config(config),
+    wayParser(config) {
 
     loadFromFile(filePath);
 }
@@ -40,8 +42,8 @@ std::unique_ptr<Map> MapParser::parse() {
         parseElements(data);
         addNodesToMap();
         addWaysToMap();
-        parseWayTypes();
-        constructRelations();
+        //parseWayTypes();
+        //constructRelations();
 
     } catch (const std::exception& e) {
         std::cerr << "Json parser error:\n";
@@ -92,11 +94,14 @@ void MapParser::addWaysToMap() {
 
     for (auto& [id, way] : wayParser.getWays()) {
 
+        if (!config.mapFeatures.contains(way.type) && !way.isPartOfRelation)
+            continue;
+
         const auto nodes = map->getNodes(way.nodeIds);
         way.isComplete = nodes.size() == way.nodeIds.size();
 
-        /*if (way.isComplete)
-            continue;*/
+        if (!config.includeIncompleteWays && !way.isComplete)
+            continue;
 
         map->addWay({
             .id         = way.id,
