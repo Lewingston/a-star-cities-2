@@ -12,12 +12,12 @@
 #include <memory>
 
 namespace asc2 {
-    
-    using json = nlohmann::json;
 
     class MapParser{
 
         public:
+
+            using json = nlohmann::json;
 
             using Node = NodeParser::Node;
             using Way  = WayParser::Way;
@@ -27,12 +27,6 @@ namespace asc2 {
             std::unique_ptr<Map> parse();
 
         private:
-
-            struct Relation {
-                const uint64_t id;
-                const json     data;
-                bool isComplete = false;
-            };
 
             void loadFromFile(const std::string& filePath);
 

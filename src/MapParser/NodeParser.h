@@ -4,11 +4,11 @@
 
 namespace asc2 {
 
-    using json = nlohmann::json;
-
     class NodeParser {
 
         public:
+
+            using json = nlohmann::json;
 
             struct Node {
                 const uint64_t id;
@@ -17,17 +17,12 @@ namespace asc2 {
                 const json&    data;
             };
 
-            //[[nodiscard]] static Node parse(const json& data);
-
             NodeParser() = default;
 
             bool parse(const json& data);
 
             [[nodiscard]] std::size_t getNodeCount() const noexcept { return nodes.size(); }
             [[nodiscard]] const std::map<uint64_t, Node>& getNodes() const noexcept { return nodes; }
-
-            /*[[nodiscard]] static std::vector<std::reference_wrapper<const Node>> getNodes(
-                const std::map<uint64_t, Node>& nodeMap, const std::vector<uint64_t>& ids);*/
 
         private:
 

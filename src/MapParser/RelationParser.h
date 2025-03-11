@@ -9,11 +9,11 @@
 
 namespace asc2 {
 
-    using json = nlohmann::json;
-
     class RelationParser {
 
         public:
+
+            using json = nlohmann::json;
 
             using Way  = WayParser::Way;
             using Node = NodeParser::Node;
