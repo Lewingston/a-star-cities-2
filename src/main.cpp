@@ -21,10 +21,18 @@ int main(int argc, const char** args) {
     };
 
     try {
-        MapParser parser("../../maps/speyer.json", parserConfig);
-        //MapParser parser("../../maps/bingen_umgebung.json");
-        //MapParser parser("../../maps/budesheim.json");
+
+        const std::string filePath = "../../maps/speyer.json";
+        //const std::string filePath = "../../maps/bingen_umgebung.json";
+        //const std::string filePath = "../../maps/budesheim.json";
+
+        MapParser parser(filePath, parserConfig);
+
         map = parser.parse();
+        if (map == nullptr) {
+            std::cerr << "Failed to parse map: " << filePath << '\n';
+        }
+
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return 1;

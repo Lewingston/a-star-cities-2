@@ -32,8 +32,6 @@ namespace asc2 {
 
             bool parse(const json& data);
 
-            [[nodiscard]] MapFeatureType getType(const json& data);
-
             [[nodiscard]] std::size_t getWayCount() const noexcept { return ways.size(); }
             [[nodiscard]] std::map<uint64_t, Way>& getWays() noexcept { return ways; }
 

@@ -18,11 +18,9 @@ bool WayParser::parse(const json& data) {
         return true;
     }
 
-    const MapFeatureType type = getType(data);
-
     const auto [iter, success] = ways.emplace(id, Way {
         .id         = id,
-        .type       = type,
+        .type       = ParserUtils::getType(data, config.mapFeatures),
         .data       = data,
         .nodeIds    = ParserUtils::getIdsFromArray(data["nodes"]),
         .isComplete = false
@@ -35,21 +33,4 @@ bool WayParser::parse(const json& data) {
     }
 
     return success;
-}
-
-MapFeatureType WayParser::getType(const json& data) {
-
-    // Assume that if a way has no tags, it is part on a relation
-    // and there for has no type.
-    if (!data.contains("tags"))
-        return MapFeatureType::NO_TYPE;
-
-    const auto tags = data["tags"];
-
-    for (MapFeatureType type : config.mapFeatures) {
-        if (tags.contains(MapFeatureType::getTypeName(type)))
-            return type;
-    }
-
-    return MapFeatureType::UNKNOWN;
 }

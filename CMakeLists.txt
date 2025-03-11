@@ -66,6 +66,7 @@ set(SOURCE_FILES
     src/MapParser/MapParser.cpp
     src/MapParser/NodeParser.cpp
     src/MapParser/WayParser.cpp
+    src/MapParser/RelationParser.cpp
     src/MapParser/ParserUtils.cpp
     src/MapRenderer/LineBuffer.cpp
     src/MapRenderer/Window.cpp

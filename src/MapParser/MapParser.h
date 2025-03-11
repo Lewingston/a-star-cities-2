@@ -3,6 +3,7 @@
 #include "MapParserConfig.h"
 #include "NodeParser.h"
 #include "WayParser.h"
+#include "RelationParser.h"
 #include "../Map/Map.h"
 
 #include <nlohmann/json.hpp>
@@ -35,15 +36,11 @@ namespace asc2 {
 
             void loadFromFile(const std::string& filePath);
 
-            void parseElements(const json& data);
+            bool parseElements(const json& data);
+            bool parseElement(const json& element);
 
             void addNodesToMap();
             void addWaysToMap();
-
-            void parseRelation(const json& data);
-
-            void constructRelations();
-            void constructRelation(Relation& relation) const;
 
             void parseWayTypes();
             [[nodiscard]] bool wayIsHighway(const Way& way) const;
@@ -55,10 +52,9 @@ namespace asc2 {
 
             json data;
 
-            NodeParser nodeParser;
-            WayParser  wayParser;
-
-            std::map<uint64_t, Relation> relations;
+            NodeParser     nodeParser;
+            WayParser      wayParser;
+            RelationParser relationParser;
 
             std::unique_ptr<Map> map;
     };

@@ -11,7 +11,8 @@ using namespace asc2;
 
 MapParser::MapParser(const std::string& filePath, const MapParserConfig& config) :
     config(config),
-    wayParser(config) {
+    wayParser(config),
+    relationParser(config) {
 
     loadFromFile(filePath);
 }
@@ -39,9 +40,15 @@ std::unique_ptr<Map> MapParser::parse() {
 
     try {
 
-        parseElements(data);
+        if (!parseElements(data)) {
+            return nullptr;
+        }
+
+        relationParser.constructRelations(wayParser.getWays());
+
         addNodesToMap();
         addWaysToMap();
+
         //parseWayTypes();
         //constructRelations();
 
@@ -54,24 +61,36 @@ std::unique_ptr<Map> MapParser::parse() {
     return std::move(map);
 }
 
-void MapParser::parseElements(const json& data) {
+bool MapParser::parseElements(const json& data) {
 
     for (const auto& element: data["elements"]) {
 
-        if (element["type"] == "node") {
-            nodeParser.parse(element);
-        } else if (element["type"] == "way") {
-            wayParser.parse(element);
-        } else if (element["type"] == "relation") {
-            parseRelation(element);
-        } else {
-            std::cout << "Element with unknown type: " << element["type"] << '\n';
+        if (!parseElement(element)) {
+            std::cerr << "Failed to parse element:\n";
+            std::cerr << element.dump();
+            return false;
         }
     }
 
     std::cout << "Node count:     " << nodeParser.getNodeCount() << '\n';
-    std::cout << "Way count:      " << wayParser.getWayCount()   << '\n';
-    std::cout << "Relation count: " << relations.size() << '\n';
+    std::cout << "Way count:      " << wayParser.getWayCount() << '\n';
+    std::cout << "Relation count: " << relationParser.getRelationCount() << '\n';
+
+    return true;
+}
+
+bool MapParser::parseElement(const json& element) {
+
+    if (element["type"] == "node") {
+        return nodeParser.parse(element);
+    } else if (element["type"] == "way") {
+        return wayParser.parse(element);
+    } else if (element["type"] == "relation") {
+        return relationParser.parse(element);
+    } else {
+        std::cout << "Element with unknown type: " << element["type"] << '\n';
+        return true;
+    }
 }
 
 void MapParser::addNodesToMap() {
@@ -100,7 +119,10 @@ void MapParser::addWaysToMap() {
         const auto nodes = map->getNodes(way.nodeIds);
         way.isComplete = nodes.size() == way.nodeIds.size();
 
-        if (!config.includeIncompleteWays && !way.isComplete)
+        if (!config.includeIncompleteWays && !way.isComplete && !way.isPartOfRelation)
+            continue;
+
+        if (!way.isPartOfRelation)
             continue;
 
         map->addWay({
@@ -109,96 +131,6 @@ void MapParser::addWaysToMap() {
             .isComplete = way.isComplete
         });
     }
-}
-
-void MapParser::constructRelations() {
-
-    std::cout << "Contruct relations\n";
-
-    uint32_t completeCount = 0;
-    uint32_t incompleteCount = 0;
-
-    for (auto& [id, relation] : relations) {
-
-        constructRelation(relation);
-
-        relation.isComplete ? completeCount++ : incompleteCount++;
-    }
-
-    std::cout << "Number of complete relations:   " << completeCount   << '\n';
-    std::cout << "Number of incomplete relations: " << incompleteCount << '\n';
-}
-
-void MapParser::parseRelation(const json& data) {
-
-    const uint64_t id = data["id"];
-
-    const Relation relation {
-        .id   = id,
-        .data = data
-    };
-
-    const auto [iter, success] = relations.emplace(id, relation);
-    if (!success) {
-        std::cerr << "Dupliacate relation ids:\n";
-        std::cerr << iter->second.data.dump() << '\n';
-        std::cerr << data.dump();
-    }
-}
-
-void MapParser::constructRelation(Relation& relation) const {
-
-    relation.isComplete = false;
-
-    if (!relation.data.contains("members") || relation.data["members"].size() == 0) {
-        std::cout << "Relation has no members: " << relation.data.dump() << '\n';
-        return;
-    }
-
-    const std::size_t memberCount = relation.data["members"].size();
-
-    std::vector<uint64_t> wayIds;
-    wayIds.reserve(memberCount);
-
-    std::vector<uint64_t> nodeIds;
-    nodeIds.reserve(memberCount);
-
-    std::vector<uint64_t> relationIds;
-    relationIds.reserve(memberCount);
-
-    for (const auto& element : relation.data["members"]) {
-        const std::string type = element["type"];
-        const uint64_t id = element["ref"];
-        if (type == "node")
-            nodeIds.emplace_back(id);
-        else if (type == "way")
-            wayIds.emplace_back(id);
-        else if (type == "relation")
-            relationIds.emplace_back(id);
-        else
-            std::cout << "Relation has unknown member type: " << type << '\n';
-    }
-
-    // TODO: Recursive relations
-    if (relationIds.size() > 0)
-        return;
-
-    // check if all nodes where found
-    if (nodeIds.size() != map->getNodes(nodeIds).size())
-        return;
-
-    // check if all ways where found
-    const auto ways = map->getWays(wayIds);
-    if (ways.size() != wayIds.size())
-        return;
-
-    // check if all ways are complete
-    for (const auto& way : ways) {
-        if (!way.get().isComplete)
-            return;
-    }
-
-    relation.isComplete = true;
 }
 
 void MapParser::parseWayTypes() {
