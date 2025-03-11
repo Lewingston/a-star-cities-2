@@ -9,6 +9,8 @@ namespace asc2 {
 
     class Map;
 
+    struct RenderConfig;
+
     class Window {
 
         public:
@@ -16,7 +18,8 @@ namespace asc2 {
             Window(uint32_t width, uint32_t height, const std::string& title);
 
             void show();
-            void renderMap(const Map& map);
+            void renderMap(const Map& map,
+                           const RenderConfig& config);
 
         private:
 

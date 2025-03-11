@@ -119,9 +119,10 @@ void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
     mousePosition = mouseMovedEvent.position;
 }
 
-void Window::renderMap(const Map& map) {
+void Window::renderMap(const Map& map,
+                       const RenderConfig& config) {
 
-    mapRenderer.init(map);
+    mapRenderer.init(map, config);
 
     mapCenter = {static_cast<float>(map.getCenter().first), -static_cast<float>(map.getCenter().second)};
 

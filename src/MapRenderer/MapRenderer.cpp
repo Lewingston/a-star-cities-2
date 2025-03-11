@@ -4,11 +4,14 @@
 
 using namespace asc2;
 
-void MapRenderer::init(const Map& map) {
+void MapRenderer::init(const Map& map,
+                       const RenderConfig& config) {
 
-    //createBufferFromAllWays(map);
-    createBufferFromRoads(map);
-    createBufferFromBuildings(map);
+    this->config = config;
+
+    createBufferFromAllWays(map);
+    //createBufferFromRoads(map);
+    //createBufferFromBuildings(map);
 }
 
 void MapRenderer::draw(sf::RenderTarget& target) {
@@ -25,7 +28,7 @@ void MapRenderer::draw(sf::RenderTarget& target) {
 
 void MapRenderer::createBufferFromAllWays(const Map& map) {
 
-    lineBufferAllWays = std::make_unique<LineBuffer>(map.getAllWays());
+    lineBufferAllWays = std::make_unique<LineBuffer>(map.getAllWays(), config);
 }
 
 void MapRenderer::createBufferFromRoads(const Map& map) {
@@ -37,7 +40,7 @@ void MapRenderer::createBufferFromRoads(const Map& map) {
         roadWays.push_back(road.getWay());
     }
 
-    lineBufferRoads = std::make_unique<LineBuffer>(roadWays);
+    lineBufferRoads = std::make_unique<LineBuffer>(roadWays, config);
 }
 
 void MapRenderer::createBufferFromBuildings(const Map& map) {
@@ -49,5 +52,5 @@ void MapRenderer::createBufferFromBuildings(const Map& map) {
         buildingWays.push_back(building.getWay());
     }
 
-    lineBufferBuildings = std::make_unique<LineBuffer>(buildingWays);
+    lineBufferBuildings = std::make_unique<LineBuffer>(buildingWays, config);
 }

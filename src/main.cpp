@@ -12,12 +12,19 @@ int main(int argc, const char** args) {
 
     std::unique_ptr<Map> map;
 
+    const bool enableIncomplete = false;
+
     MapParserConfig parserConfig {
         .mapFeatures = {
             MapFeatureType::BUILDING,
-            MapFeatureType::HIGHWAY,
-            MapFeatureType::RAILWAY,
-        }
+            //MapFeatureType::HIGHWAY,
+            //MapFeatureType::RAILWAY,
+        },
+        .includeIncompleteWays = enableIncomplete
+    };
+
+    RenderConfig renderConfig {
+        .displayIncomplete = enableIncomplete
     };
 
     try {
@@ -39,7 +46,7 @@ int main(int argc, const char** args) {
     }
 
     Window window(800, 600, ProgramInfo::name);
-    window.renderMap(*map);
+    window.renderMap(*map, renderConfig);
     window.show();
 
     return 0;

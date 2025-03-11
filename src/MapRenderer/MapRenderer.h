@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RenderConfig.h"
 #include "LineBuffer.h"
 
 #include <memory>
@@ -18,7 +19,8 @@ namespace asc2 {
 
             MapRenderer() = default;
 
-            void init(const Map& map);
+            void init(const Map& map,
+                      const RenderConfig& config);
 
             void draw(sf::RenderTarget& target);
 
@@ -31,6 +33,8 @@ namespace asc2 {
             std::unique_ptr<LineBuffer> lineBufferAllWays;
             std::unique_ptr<LineBuffer> lineBufferRoads;
             std::unique_ptr<LineBuffer> lineBufferBuildings;
+
+            RenderConfig config;
 
     };
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RenderConfig.h"
+
 #include <SFML/Graphics/VertexBuffer.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 
@@ -15,9 +17,9 @@ namespace asc2 {
 
         public:
 
-            LineBuffer(const std::vector<std::reference_wrapper<const Way>>& ways);
+            LineBuffer(const std::vector<std::reference_wrapper<const Way>>& ways, const RenderConfig& config);
 
-            LineBuffer(const std::map<uint64_t, Way>& ways);
+            LineBuffer(const std::map<uint64_t, Way>& ways, const RenderConfig& config);
 
             void draw(sf::RenderTarget& target);
 
@@ -26,6 +28,8 @@ namespace asc2 {
             }
 
         private:
+
+            RenderConfig config;
 
             sf::VertexBuffer vertexBuffer;
 
