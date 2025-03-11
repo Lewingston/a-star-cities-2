@@ -78,7 +78,7 @@ add_executable(${Name} ${SOURCE_FILES})
 target_include_directories(${Name} PUBLIC "${PROJECT_BINARY_DIR}")
 
 # SFML
-add_subdirectory(libs/SFML)
+add_subdirectory(libs/SFML SYSTEM)
 target_link_libraries(${Name} sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 include_directories(SYSTEM libs/SFML/include)
 
