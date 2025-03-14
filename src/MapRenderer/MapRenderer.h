@@ -2,6 +2,7 @@
 
 #include "RenderConfig.h"
 #include "LineBuffer.h"
+#include "ShapeBuffer.h"
 
 #include <memory>
 
@@ -27,12 +28,14 @@ namespace asc2 {
         private:
 
             void createBufferFromAllWays(const Map& map);
-            void createBufferFromRoads(const Map& map);
-            void createBufferFromBuildings(const Map& map);
+            void createLineBufferFromRoads(const Map& map);
+            void createLineBufferFromBuildings(const Map& map);
+            void createShapeBufferFromBuildings(const Map& map);
 
-            std::unique_ptr<LineBuffer> lineBufferAllWays;
-            std::unique_ptr<LineBuffer> lineBufferRoads;
-            std::unique_ptr<LineBuffer> lineBufferBuildings;
+            std::unique_ptr<LineBuffer>  lineBufferAllWays;
+            std::unique_ptr<LineBuffer>  lineBufferRoads;
+            std::unique_ptr<LineBuffer>  lineBufferBuildings;
+            std::unique_ptr<ShapeBuffer> shapeBufferBuildings;
 
             RenderConfig config;
 

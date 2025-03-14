@@ -37,10 +37,9 @@ namespace asc2 {
             void addWaysToMap();
 
             void parseWayTypes();
-            [[nodiscard]] bool wayIsHighway(const Way& way) const;
-            [[nodiscard]] bool wayIsBuilding(const Way& way) const;
-            void parseHighway(const Way& way);
-            void parseBuilding(const Way& way);
+            void parseRelationTypes();
+
+            void addBuilding(const RelationParser::Relation& relation);
 
             MapParserConfig config;
 

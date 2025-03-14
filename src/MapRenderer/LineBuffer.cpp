@@ -69,6 +69,11 @@ void LineBuffer::initVertexBuffer(std::size_t vertexCount) {
 
 void LineBuffer::updateVertexBuffer() {
 
+    if (vertexArray.size() == 0) {
+        std::cout << "Skip updating vertex buffer. Buffer has no vertices.\n";
+        return;
+    }
+
     if (!vertexBuffer.update(vertexArray.data(), vertexArray.size(), 0)) {
         throw std::runtime_error("Failed to udpate vertex buffer!");
     }

@@ -60,6 +60,8 @@ namespace asc2 {
             bool operator==(MapFeatureType type) const { return this->type == type.type; }
             bool operator<(MapFeatureType type)  const { return this->type < type.type; }
 
+            [[nodiscard]] Type getEnumValue() const noexcept { return type; }
+
         private:
 
             Type type = Type::UNKNOWN;

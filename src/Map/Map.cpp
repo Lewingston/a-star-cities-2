@@ -43,6 +43,42 @@ void Map::addBuilding(BuildingType type, uint64_t wayId) {
     }
 }
 
+void Map::addBuilding(BuildingType type,
+                      uint64_t relationId,
+                      const std::vector<uint64_t>& outerWayIds,
+                      const std::vector<uint64_t>& innerWayIds) {
+
+    std::vector<std::reference_wrapper<const Way>> outerWays;
+    outerWays.reserve(outerWayIds.size());
+    std::vector<std::reference_wrapper<const Way>> innerWays;
+    innerWays.reserve(innerWayIds.size());
+
+    for (uint64_t id : outerWayIds) {
+        if (auto find = this->ways.find(id); find != ways.end()) {
+            outerWays.emplace_back(find->second);
+        } else {
+            std::cerr << "Failed to add building with id: " << relationId << " - Inner way not found: " << id << '\n';
+            return;
+        }
+    }
+
+    for (uint64_t id : innerWayIds) {
+        if (auto find = this->ways.find(id); find != ways.end()) {
+            innerWays.emplace_back(find->second);
+        } else {
+            std::cerr << "Failed to add building with id: " << relationId << " - Outer way not found: " << id << '\n';
+            return;
+        }
+    }
+
+    buildings.push_back(Building{
+        type,
+        relationId,
+        outerWays,
+        innerWays
+    });
+}
+
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     const std::vector<uint64_t>& ids) const {
 

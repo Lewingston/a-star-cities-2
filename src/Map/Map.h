@@ -34,6 +34,10 @@ namespace asc2 {
 
             void addRoad(RoadType type, uint64_t wayId);
             void addBuilding(BuildingType type, uint64_t wayId);
+            void addBuilding(BuildingType type,
+                             uint64_t relationId,
+                             const std::vector<uint64_t>& outerWayIds,
+                             const std::vector<uint64_t>& innerWayIds);
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& ids) const;

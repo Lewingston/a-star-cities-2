@@ -23,8 +23,8 @@ namespace asc2 {
                 const uint64_t id;
                 const MapFeatureType type;
                 const json& data;
-                std::vector<std::reference_wrapper<Way>> outerWays;
-                std::vector<std::reference_wrapper<Way>> innerWays;
+                std::vector<std::reference_wrapper<Way>> outerWays {};
+                std::vector<std::reference_wrapper<Way>> innerWays {};
                 bool isComplete;
             };
 
@@ -36,6 +36,7 @@ namespace asc2 {
             void constructRelation(Relation& relation, std::map<uint64_t, Way>& wayMap);
 
             [[nodiscard]] std::size_t getRelationCount() const noexcept { return relations.size(); }
+            [[nodiscard]] std::map<uint64_t, Relation>& getRelations() noexcept { return relations; }
 
         private:
 

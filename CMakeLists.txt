@@ -68,9 +68,13 @@ set(SOURCE_FILES
     src/MapParser/WayParser.cpp
     src/MapParser/RelationParser.cpp
     src/MapParser/ParserUtils.cpp
+    src/MapParser/RoadParser.cpp
+    src/MapParser/BuildingParser.cpp
     src/MapRenderer/LineBuffer.cpp
     src/MapRenderer/Window.cpp
     src/MapRenderer/MapRenderer.cpp
+    src/MapRenderer/ShapeRenderer.cpp
+    src/MapRenderer/ShapeBuffer.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})
@@ -84,6 +88,9 @@ include_directories(SYSTEM libs/SFML/include)
 
 # nlohmann json parser
 include_directories(SYSTEM libs/json/single_include)
+
+# earcut shape generator
+include_directories(SYSTEM libs/earcut/include/mapbox)
 
 # Custom target to run the application
 add_custom_target(test

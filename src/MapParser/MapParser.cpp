@@ -1,7 +1,10 @@
 
 #include "MapParser.h"
+#include "RoadParser.h"
+#include "BuildingParser.h"
 
 #include "../Map/BuildingType.h"
+#include "../Map/MapFeatureType.h"
 
 #include <fstream>
 #include <iostream>
@@ -48,6 +51,9 @@ std::unique_ptr<Map> MapParser::parse() {
 
         addNodesToMap();
         addWaysToMap();
+
+        parseWayTypes();
+        parseRelationTypes();
 
         //parseWayTypes();
         //constructRelations();
@@ -136,44 +142,57 @@ void MapParser::parseWayTypes() {
 
     for (const auto& [id, way] : wayParser.getWays()) {
 
-        if (!way.isComplete)
+        if (!way.isComplete && !config.includeIncompleteWays)
             continue;
 
-        if (wayIsHighway(way)) {
-            parseHighway(way);
-        } else if (wayIsBuilding(way)) {
-            parseBuilding(way);
+        if (!config.mapFeatures.contains(way.type))
+            continue;
+
+        switch (way.type.getEnumValue()) {
+            case MapFeatureType::HIGHWAY:
+                map->addRoad(RoadParser::getRoadType(way), way.id);
+                break;
+            case MapFeatureType::BUILDING:
+                map->addBuilding(BuildingParser::getBuildingType(way), way.id);
+                break;
+            default:
+                break;
         }
     }
 }
 
-bool MapParser::wayIsHighway(const Way& way) const {
+void MapParser::parseRelationTypes() {
 
-    if (!way.data.contains("tags")) {
-        return false;
+    std::cout << "Parse relation types\n";
+
+    for (const auto& [id, relation] : relationParser.getRelations()) {
+
+        if (!relation.isComplete)
+            continue;
+
+        if (!config.mapFeatures.contains(relation.type))
+            continue;
+
+        switch (relation.type.getEnumValue()) {
+            case MapFeatureType::BUILDING:
+                addBuilding(relation);
+                break;
+            default:
+                break;
+        }
     }
-
-    return way.data["tags"].contains("highway");
 }
 
-void MapParser::parseHighway(const Way& way) {
+void MapParser::addBuilding(const RelationParser::Relation& relation) {
 
-    const RoadType type(way.data["tags"]["highway"].get<std::string>());
+    std::vector<uint64_t> outerWays(relation.outerWays.size());
+    std::vector<uint64_t> innerWays(relation.innerWays.size());
 
-    map->addRoad(type, way.id);
-}
+    for (std::size_t ii = 0; ii < relation.outerWays.size(); ii++)
+        outerWays[ii] = relation.outerWays[ii].get().id;
 
-bool MapParser::wayIsBuilding(const Way& way) const {
+    for (std::size_t ii = 0; ii < relation.innerWays.size(); ii++)
+        innerWays[ii] = relation .innerWays[ii].get().id;
 
-    if (!way.data.contains("tags"))
-        return false;
-
-    return way.data["tags"].contains("building");
-}
-
-void MapParser::parseBuilding(const Way& way) {
-
-    const BuildingType type(way.data["tags"]["building"].get<std::string>());
-
-    map->addBuilding(type, way.id);
+    map->addBuilding(BuildingParser::getBuildingType(relation), relation.id, outerWays, innerWays);
 }
