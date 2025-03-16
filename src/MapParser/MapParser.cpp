@@ -55,9 +55,6 @@ std::unique_ptr<Map> MapParser::parse() {
         parseWayTypes();
         parseRelationTypes();
 
-        //parseWayTypes();
-        //constructRelations();
-
     } catch (const std::exception& e) {
         std::cerr << "Json parser error:\n";
         std::cerr << e.what() << '\n';

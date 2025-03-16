@@ -16,11 +16,11 @@ namespace asc2 {
                      const std::vector<std::reference_wrapper<const Way>>& outerWays,
                      const std::vector<std::reference_wrapper<const Way>>& innerWays);
 
-            [[nodiscard]] const std::vector<std::reference_wrapper<const Way>> getOuterWays() const noexcept {
+            [[nodiscard]] const std::vector<std::reference_wrapper<const Way>>& getOuterWays() const noexcept {
                 return outerWays;
             }
 
-            [[nodiscard]] const std::vector<std::reference_wrapper<const Way>> getInnerWays() const noexcept {
+            [[nodiscard]] const std::vector<std::reference_wrapper<const Way>>& getInnerWays() const noexcept {
                 return innerWays;
             }
 

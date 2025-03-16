@@ -90,7 +90,7 @@ include_directories(SYSTEM libs/SFML/include)
 include_directories(SYSTEM libs/json/single_include)
 
 # earcut shape generator
-include_directories(SYSTEM libs/earcut/include/mapbox)
+include_directories(SYSTEM libs/earcut/include)
 
 # Custom target to run the application
 add_custom_target(test

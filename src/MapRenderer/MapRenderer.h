@@ -32,6 +32,8 @@ namespace asc2 {
             void createLineBufferFromBuildings(const Map& map);
             void createShapeBufferFromBuildings(const Map& map);
 
+            [[nodiscard]] std::size_t getBuildingWayCount(const Map& map) const;
+
             std::unique_ptr<LineBuffer>  lineBufferAllWays;
             std::unique_ptr<LineBuffer>  lineBufferRoads;
             std::unique_ptr<LineBuffer>  lineBufferBuildings;

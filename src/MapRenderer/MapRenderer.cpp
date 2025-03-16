@@ -1,6 +1,10 @@
 
 #include "MapRenderer.h"
+#include "ShapeRenderer.h"
 #include "../Map/Map.h"
+
+#include <iostream>
+#include <numeric>
 
 using namespace asc2;
 
@@ -9,11 +13,30 @@ void MapRenderer::init(const Map& map,
 
     this->config = config;
 
-    //createBufferFromAllWays(map);
+    createBufferFromAllWays(map);
     //createLineBufferFromRoads(map);
-    createLineBufferFromBuildings(map);
+    //createLineBufferFromBuildings(map);
 
-    //createShapeBufferFromBuildings(map);
+    createShapeBufferFromBuildings(map);
+
+    std::size_t vertexCount = 0;
+    std::size_t edgeCount = 0;
+    std::size_t polygonCount = 0;
+
+    if (shapeBufferBuildings) {
+        vertexCount += shapeBufferBuildings->getVertexCount();
+        edgeCount += shapeBufferBuildings->getEdgeCount();
+        polygonCount += shapeBufferBuildings->getPolygonCount();
+    }
+
+    if (lineBufferAllWays) {
+        vertexCount += lineBufferAllWays->getVertexCount();
+        edgeCount += lineBufferAllWays->getNumberOfLines();
+    }
+
+    std::cout << "Total vertices: " << vertexCount << '\n';
+    std::cout << "Total edges: " << edgeCount << '\n';
+    std::cout << "Total polygon count: " << polygonCount << '\n';
 }
 
 void MapRenderer::draw(sf::RenderTarget& target) {
@@ -51,15 +74,15 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
 void MapRenderer::createLineBufferFromBuildings(const Map& map) {
 
     std::vector<std::reference_wrapper<const Way>> buildingWays;
-    buildingWays.reserve(map.getAllBuildings().size());
+    buildingWays.reserve(getBuildingWayCount(map));
 
     for (const Building& building : map.getAllBuildings()) {
 
-        for (const Way& way : building.getOuterWays())
-            buildingWays.push_back(way);
+        const auto& outerWays = building.getOuterWays();
+        const auto& innerWays = building.getInnerWays();
 
-        for (const Way& way : building.getInnerWays())
-            buildingWays.push_back(way);
+        buildingWays.insert(buildingWays.end(), outerWays.begin(), outerWays.end());
+        buildingWays.insert(buildingWays.end(), innerWays.begin(), innerWays.end());
     }
 
     lineBufferBuildings = std::make_unique<LineBuffer>(buildingWays, config);
@@ -67,4 +90,25 @@ void MapRenderer::createLineBufferFromBuildings(const Map& map) {
 
 void MapRenderer::createShapeBufferFromBuildings(const Map& map) {
 
+    std::vector<ShapeRenderer> shapes;
+    shapes.reserve(map.getAllBuildings().size());
+
+    for (const Building& building : map.getAllBuildings()) {
+
+        shapes.emplace_back(building.getOuterWays(), building.getInnerWays());
+    }
+
+    shapeBufferBuildings = std::make_unique<ShapeBuffer>(shapes, false);
+}
+
+std::size_t MapRenderer::getBuildingWayCount(const Map& map) const {
+
+    const auto& buildings = map.getAllBuildings();
+
+    const std::size_t count = std::accumulate(buildings.begin(), buildings.end(), 0u,
+        [](std::size_t count, const Building& building) -> std::size_t {
+            return count + building.getOuterWays().size() + building.getInnerWays().size();
+        });
+
+    return count;
 }

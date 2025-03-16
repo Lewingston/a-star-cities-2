@@ -27,6 +27,10 @@ namespace asc2 {
                 return vertexBuffer.getVertexCount() / 2;
             }
 
+            [[nodiscard]] std::size_t getVertexCount() const noexcept {
+                return vertexBuffer.getVertexCount();
+            }
+
         private:
 
             RenderConfig config;
