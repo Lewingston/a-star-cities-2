@@ -1,0 +1,1 @@
+/usr/bin/curl --data "@requestAllDataInCity" https://overpass-api.de/api/interpreter
