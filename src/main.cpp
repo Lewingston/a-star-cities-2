@@ -16,8 +16,8 @@ int main(int argc, const char** args) {
 
     MapParserConfig parserConfig {
         .mapFeatures = {
-            //MapFeatureType::NO_TYPE,
-            //MapFeatureType::UNKNOWN,
+            MapFeatureType::NO_TYPE,
+            MapFeatureType::UNKNOWN,
             MapFeatureType::BUILDING,
             //MapFeatureType::HIGHWAY,
             //MapFeatureType::RAILWAY,
@@ -27,18 +27,14 @@ int main(int argc, const char** args) {
 
     RenderConfig renderConfig {
         .displayIncomplete = enableIncomplete,
-        .buildingLineMode  = true
+        .buildingLineMode  = false
     };
 
     try {
 
-        std::string filePath = "../../maps/test/mannheim_schloss.json";
+        std::string filePath = "../../maps/test/speyer.json";
         if (argc == 2)
             filePath = std::string(args[1]);
-
-        //const std::string filePath = "../../maps/speyer.json";
-        //const std::string filePath = "../../maps/bingen_umgebung.json";
-        //const std::string filePath = "../../maps/budesheim.json";
 
         MapParser parser(filePath, parserConfig);
 

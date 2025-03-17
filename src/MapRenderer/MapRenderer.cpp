@@ -13,11 +13,11 @@ void MapRenderer::init(const Map& map,
 
     this->config = config;
 
-    //createBufferFromAllWays(map);
+    createBufferFromAllWays(map);
     //createLineBufferFromRoads(map);
-    createLineBufferFromBuildings(map);
+    //createLineBufferFromBuildings(map);
 
-    //createShapeBufferFromBuildings(map);
+    createShapeBufferFromBuildings(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
@@ -94,9 +94,6 @@ void MapRenderer::createShapeBufferFromBuildings(const Map& map) {
     shapes.reserve(map.getAllBuildings().size());
 
     for (const Building& building : map.getAllBuildings()) {
-
-        if (building.getOuterWays().size() < 2)
-            continue;
 
         shapes.emplace_back(building.getOuterWays(), building.getInnerWays());
     }
