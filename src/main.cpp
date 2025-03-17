@@ -16,6 +16,8 @@ int main(int argc, const char** args) {
 
     MapParserConfig parserConfig {
         .mapFeatures = {
+            //MapFeatureType::NO_TYPE,
+            //MapFeatureType::UNKNOWN,
             MapFeatureType::BUILDING,
             //MapFeatureType::HIGHWAY,
             //MapFeatureType::RAILWAY,
@@ -24,12 +26,17 @@ int main(int argc, const char** args) {
     };
 
     RenderConfig renderConfig {
-        .displayIncomplete = enableIncomplete
+        .displayIncomplete = enableIncomplete,
+        .buildingLineMode  = true
     };
 
     try {
 
-        const std::string filePath = "../../maps/speyer.json";
+        std::string filePath = "../../maps/test/mannheim_schloss.json";
+        if (argc == 2)
+            filePath = std::string(args[1]);
+
+        //const std::string filePath = "../../maps/speyer.json";
         //const std::string filePath = "../../maps/bingen_umgebung.json";
         //const std::string filePath = "../../maps/budesheim.json";
 
@@ -44,6 +51,9 @@ int main(int argc, const char** args) {
         std::cerr << e.what() << '\n';
         return 1;
     }
+
+    std::cout << "Road count: " << map->getAllRoads().size() << '\n';
+    std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
 
     Window window(800, 600, ProgramInfo::name);
     window.renderMap(*map, renderConfig);
