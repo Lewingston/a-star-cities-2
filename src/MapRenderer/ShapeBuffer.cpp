@@ -21,11 +21,6 @@ ShapeBuffer::ShapeBuffer(const std::vector<ShapeRenderer>& shapes, bool lineMode
         if (vertices.size() % 3 != 0)
             throw std::runtime_error("Shape has invalid vertex count: " + std::to_string(vertices.size()));
 
-        if (lineMode)
-            vertexArray.reserve(vertexArray.size() + vertices.size() * 2);
-        else 
-            vertexArray.reserve(vertexArray.size() + vertices.size());
-
         for (std::size_t ii = 0; ii < vertices.size(); ii += 3) {
 
             if (lineMode) {
