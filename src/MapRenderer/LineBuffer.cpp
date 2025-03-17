@@ -9,6 +9,7 @@
 
 #include <numeric>
 #include <iostream>
+#include <random>
 
 using namespace asc2;
 
@@ -92,6 +93,11 @@ bool LineBuffer::wayIsSuitableForRendering(const Way& way) const {
 
 void LineBuffer::addWayToVertexArray(const Way& way,
                                      std::vector<sf::Vertex>& vertexArray) const {
+
+    /*const uint8_t r = static_cast<uint8_t>(std::rand() % 256);
+    const uint8_t g = static_cast<uint8_t>(std::rand() % 256);
+    const uint8_t b = static_cast<uint8_t>(std::rand() % 256);
+    const sf::Color color = sf::Color(r, g, b);*/
 
     for (auto iter = way.nodes.begin(); iter != way.nodes.end(); iter++) {
 
