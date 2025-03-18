@@ -31,6 +31,7 @@ namespace asc2 {
             void createLineBufferFromRoads(const Map& map);
             void createLineBufferFromBuildings(const Map& map);
             void createShapeBufferFromBuildings(const Map& map);
+            void createNodeBufferFromIntersections(const Map& map);
 
             [[nodiscard]] std::size_t getBuildingWayCount(const Map& map) const;
 
@@ -38,6 +39,7 @@ namespace asc2 {
             std::unique_ptr<LineBuffer>  lineBufferRoads;
             std::unique_ptr<LineBuffer>  lineBufferBuildings;
             std::unique_ptr<ShapeBuffer> shapeBufferBuildings;
+            std::unique_ptr<ShapeBuffer> nodeBufferIntersections;
 
             RenderConfig config;
 

@@ -12,12 +12,15 @@ namespace sf {
 namespace asc2 {
 
     class ShapeRenderer;
+    class NodeRenderer;
 
     class ShapeBuffer {
 
         public:
 
             ShapeBuffer(const std::vector<ShapeRenderer>& shapes, bool lineMode = false);
+
+            ShapeBuffer(const std::vector<NodeRenderer>& nodes);
 
             void draw(sf::RenderTarget& target);
 
@@ -38,6 +41,6 @@ namespace asc2 {
 
             void updateVertexBuffer();
 
-            bool lineMode;
+            bool lineMode = false;
     };
 }

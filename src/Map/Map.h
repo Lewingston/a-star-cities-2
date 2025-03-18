@@ -47,6 +47,7 @@ namespace asc2 {
 
             [[nodiscard]] const std::map<uint64_t, Node>& getAllNodes() const noexcept { return nodes; }
             [[nodiscard]] const std::map<uint64_t, Way>&  getAllWays()  const noexcept { return ways;  }
+            [[nodiscard]] const std::map<uint64_t, Intersection>& getAllIntersections() const noexcept { return intersections; }
 
             [[nodiscard]] const std::vector<Road>&     getAllRoads()     const noexcept { return roads;     }
             [[nodiscard]] const std::vector<Building>& getAllBuildings() const noexcept { return buildings; }

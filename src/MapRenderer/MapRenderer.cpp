@@ -1,6 +1,7 @@
 
 #include "MapRenderer.h"
 #include "ShapeRenderer.h"
+#include "NodeRenderer.h"
 #include "../Map/Map.h"
 
 #include <iostream>
@@ -13,11 +14,13 @@ void MapRenderer::init(const Map& map,
 
     this->config = config;
 
-    createBufferFromAllWays(map);
-    //createLineBufferFromRoads(map);
+    //createBufferFromAllWays(map);
+    createLineBufferFromRoads(map);
     //createLineBufferFromBuildings(map);
 
-    createShapeBufferFromBuildings(map);
+    //createShapeBufferFromBuildings(map);
+
+    createNodeBufferFromIntersections(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
@@ -52,6 +55,9 @@ void MapRenderer::draw(sf::RenderTarget& target) {
 
     if (lineBufferBuildings)
         lineBufferBuildings->draw(target);
+
+    if (nodeBufferIntersections)
+        nodeBufferIntersections->draw(target);
 }
 
 void MapRenderer::createBufferFromAllWays(const Map& map) {
@@ -111,4 +117,22 @@ std::size_t MapRenderer::getBuildingWayCount(const Map& map) const {
         });
 
     return count;
+}
+
+void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
+
+    std::vector<NodeRenderer> nodes;
+    nodes.reserve(map.getAllIntersections().size());
+
+    for (const auto& [id, intersection] : map.getAllIntersections()) {
+
+        if (intersection.getRoads().size() < 2)
+            continue;
+
+        //std::cout << "Create intersection: " << intersection.getNode().lon << " - " << intersection.getNode().lat << '\n';
+
+        nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat);
+    }
+
+    nodeBufferIntersections = std::make_unique<ShapeBuffer>(nodes);
 }
