@@ -1,0 +1,21 @@
+[out:json]
+[timeout:120]
+[bbox:55.411701297072156, 37.06819561439349,56.15802573266405, 38.31743460810822];
+area[name = "Москва"]->.searchArea;
+(
+    way["highway" = "motorway"](area.searchArea);
+    way["highway" = "trunk"](area.searchArea);
+    way["highway" = "primary"](area.searchArea);
+    way["highway" = "secondary"](area.searchArea);
+    way["highway" = "tertiary"](area.searchArea);
+    way["highway" = "unclassified"](area.searchArea);
+    way["highway" = "residential"](area.searchArea);
+    way["highway" = "motorway_link"](area.searchArea);
+    way["highway" = "trunk_link"](area.searchArea);
+    way["highway" = "primary_link"](area.searchArea);
+    way["highway" = "secondary_link"](area.searchArea);
+    way["highway" = "tertiary_link"](area.searchArea);
+    way["highway" = "living_street"](area.searchArea);
+);
+(._;>;);
+out meta;

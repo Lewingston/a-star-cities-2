@@ -1,0 +1,1 @@
+/usr/bin/curl --data "@reqeustStreetsInCity" https://overpass-api.de/api/interpreter

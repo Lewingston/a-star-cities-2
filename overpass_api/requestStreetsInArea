@@ -1,0 +1,19 @@
+[out:json][timeout:120]
+[bbox:33.690999218322155, -118.52597859067156,34.10608710444935, -117.99646942063495];
+(
+  way["highway" = "motorway"];
+  way["highway" = "trunk"];
+  way["highway" = "primary"];
+  way["highway" = "secondary"];
+  way["highway" = "tertiary"];
+  way["highway" = "unclassified"];
+  way["highway" = "residential"];
+  way["highway" = "motorway_link"];
+  way["highway" = "trunk_link"];
+  way["highway" = "primary_link"];
+  way["highway" = "secondary_link"];
+  way["highway" = "tertiary_link"];
+  way["highway" = "living_street"];
+);
+(._;>;);
+out body qt;
