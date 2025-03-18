@@ -2,6 +2,7 @@
 #include "ShapeBuffer.h"
 #include "ShapeRenderer.h"
 #include "NodeRenderer.h"
+#include "Color.h"
 
 #include <SFML/Graphics/RenderTArget.hpp>
 
@@ -47,14 +48,14 @@ ShapeBuffer::ShapeBuffer(const std::vector<ShapeRenderer>& shapes, bool lineMode
 ShapeBuffer::ShapeBuffer(const std::vector<NodeRenderer>& nodes) :
     lineMode(false) {
 
-    const sf::Color color = sf::Color::Black;
-
     const std::size_t vertexCount = NodeRenderer::getVertexCount() * 3;
     vertexArray.reserve(vertexCount);
     initVertexBuffer(vertexCount);
 
     for (const NodeRenderer& node : nodes) {
         
+        const sf::Color color = Color::getRandomColor();
+
         for (const auto& [x, y] : node.getVertices()) {
             vertexArray.emplace_back(sf::Vector2f{x, -y}, color);
         }

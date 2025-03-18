@@ -129,8 +129,6 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
         if (intersection.getRoads().size() < 2)
             continue;
 
-        //std::cout << "Create intersection: " << intersection.getNode().lon << " - " << intersection.getNode().lat << '\n';
-
         nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat);
     }
 

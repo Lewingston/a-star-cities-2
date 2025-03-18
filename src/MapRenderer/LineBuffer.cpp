@@ -1,5 +1,6 @@
 
 #include "LineBuffer.h"
+#include "Color.h"
 #include "../Map/Node.h"
 #include "../Map/Way.h"
 
@@ -9,7 +10,6 @@
 
 #include <numeric>
 #include <iostream>
-#include <random>
 
 using namespace asc2;
 
@@ -94,17 +94,14 @@ bool LineBuffer::wayIsSuitableForRendering(const Way& way) const {
 void LineBuffer::addWayToVertexArray(const Way& way,
                                      std::vector<sf::Vertex>& vertexArray) const {
 
-    /*const uint8_t r = static_cast<uint8_t>(std::rand() % 256);
-    const uint8_t g = static_cast<uint8_t>(std::rand() % 256);
-    const uint8_t b = static_cast<uint8_t>(std::rand() % 256);
-    const sf::Color color = sf::Color(r, g, b);*/
+    const sf::Color color = Color::getRandomColor();
 
     for (auto iter = way.nodes.begin(); iter != way.nodes.end(); iter++) {
 
         const auto pos = sf::Vector2f{static_cast<float>(iter->get().lon),
                                       -static_cast<float>(iter->get().lat)};
 
-        const auto color = way.isComplete ? sf::Color::Black : sf::Color::Red;
+        //const auto color = way.isComplete ? sf::Color::Black : sf::Color::Red;
 
         vertexArray.emplace_back(pos, color);
 
