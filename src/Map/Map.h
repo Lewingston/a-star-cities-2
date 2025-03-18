@@ -4,6 +4,7 @@
 #include "Way.h"
 #include "Road.h"
 #include "Building.h"
+#include "Intersection.h"
 
 #include <map>
 #include <functional>
@@ -54,8 +55,12 @@ namespace asc2 {
 
         private:
 
+            void addRoad(RoadType type, const Way& way);
+
             std::map<uint64_t, Node> nodes;
             std::map<uint64_t, Way>  ways;
+
+            std::map<uint64_t, Intersection> intersections;
 
             std::vector<Road> roads;
             std::vector<Building> buildings;

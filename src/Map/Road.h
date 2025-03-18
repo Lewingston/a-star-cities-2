@@ -2,9 +2,12 @@
 
 #include "RoadType.h"
 
+#include <vector>
+
 namespace asc2 {
 
     class Way;
+    class Intersection;
 
     class Road {
 
@@ -16,9 +19,13 @@ namespace asc2 {
 
             [[nodiscard]] const Way& getWay() const noexcept { return way; }
 
+            void addIntersection(const Intersection& intersection);
+
         private:
 
             RoadType type;
             const Way& way;
+
+            std::vector<std::reference_wrapper<const Intersection>> intersections;
     };
 }

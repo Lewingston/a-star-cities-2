@@ -28,9 +28,22 @@ void Map::addWay(const Way& way) {
 void Map::addRoad(RoadType type, uint64_t wayId) {
 
     if (auto find = ways.find(wayId); find != ways.end()) {
-        roads.push_back(Road(type, find->second));
+        addRoad(type, find->second);
     } else {
         std::cerr << "Failed to add road with id: " << wayId << " - Way not found!\n";
+    }
+}
+
+void Map::addRoad(RoadType type, const Way& way) {
+
+    Road& road = roads.emplace_back(type, way);
+
+    // add new intersections for all nodes in road
+    for (const Node& node : road.getWay().nodes) {
+
+        auto [iter, success] = intersections.insert({node.id, Intersection(node)});
+        iter->second.addRoad(road);
+        road.addIntersection(iter->second);
     }
 }
 

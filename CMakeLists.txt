@@ -63,6 +63,7 @@ set(SOURCE_FILES
     src/Map/Road.cpp
     src/Map/BuildingType.cpp
     src/Map/Building.cpp
+    src/Map/Intersection.cpp
     src/MapParser/MapParser.cpp
     src/MapParser/NodeParser.cpp
     src/MapParser/WayParser.cpp
