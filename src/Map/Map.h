@@ -18,9 +18,9 @@ namespace asc2 {
 
             struct Dimensions {
                 double minLon = 180.0f;
-                double maxLon = 0.0f;
+                double maxLon = -180.0f;
                 double minLat = 90.0;
-                double maxLat = 0.0;
+                double maxLat = -90.0;
 
                 void adjust(double lon, double lat);
                 std::pair<double, double> getCenter() const;
