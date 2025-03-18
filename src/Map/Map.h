@@ -5,6 +5,7 @@
 #include "Road.h"
 #include "Building.h"
 #include "Intersection.h"
+#include "IdHandler.h"
 
 #include <map>
 #include <functional>
@@ -67,6 +68,8 @@ namespace asc2 {
             std::vector<Building> buildings;
 
             Dimensions dimensions;
+
+            IdHandler idHandler;
 
     };
 }

@@ -9,6 +9,7 @@ using namespace asc2;
 
 void Map::addNode(const Node& node) {
 
+    idHandler.updateUsedIds(node.id);
     const auto [iter, success] = nodes.emplace(node.id, node);
     if (!success) {
         std::cerr << "Failed to add node with id: " + std::to_string(node.id) +  " to map!\n";
@@ -19,6 +20,7 @@ void Map::addNode(const Node& node) {
 
 void Map::addWay(const Way& way) {
 
+    idHandler.updateUsedIds(way.id);
     const auto [iter, success] = ways.emplace(way.id, way);
     if (!success) {
         std::cerr << "Failed to add way with id: " + std::to_string(way.id) + " to map!\n";
@@ -51,6 +53,7 @@ void Map::addBuilding(BuildingType type, uint64_t wayId) {
 
     if (auto find = ways.find(wayId); find != ways.end()) {
         buildings.push_back(Building(type, find->second));
+        idHandler.updateUsedIds(wayId);
     } else {
         std::cerr << "Failed to add building with id: " << wayId << " - Way not found!\n";
     }
