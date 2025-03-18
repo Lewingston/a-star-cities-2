@@ -96,7 +96,7 @@ std::size_t ShapeBuffer::getVertexCount() const noexcept {
     return vertexArray.size();
 }
 
-std::size_t ShapeBuffer::getEdgeCount() const noexcept {
+std::size_t ShapeBuffer::getLineCount() const noexcept {
 
     if (lineMode)
         return getVertexCount() / 2;

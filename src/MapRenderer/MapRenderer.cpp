@@ -2,6 +2,8 @@
 #include "MapRenderer.h"
 #include "ShapeRenderer.h"
 #include "NodeRenderer.h"
+#include "LineBuffer.h"
+#include "ShapeBuffer.h"
 #include "../Map/Map.h"
 
 #include <iostream>
@@ -20,21 +22,16 @@ void MapRenderer::init(const Map& map,
 
     //createShapeBufferFromBuildings(map);
 
-    createNodeBufferFromIntersections(map);
+    //createNodeBufferFromIntersections(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
     std::size_t polygonCount = 0;
 
-    if (shapeBufferBuildings) {
-        vertexCount += shapeBufferBuildings->getVertexCount();
-        edgeCount += shapeBufferBuildings->getEdgeCount();
-        polygonCount += shapeBufferBuildings->getPolygonCount();
-    }
-
-    if (lineBufferAllWays) {
-        vertexCount += lineBufferAllWays->getVertexCount();
-        edgeCount += lineBufferAllWays->getNumberOfLines();
+    for (const auto& buffer : renderBuffers) {
+        vertexCount  += buffer->getVertexCount();
+        edgeCount    += buffer->getLineCount();
+        polygonCount += buffer->getPolygonCount();
     }
 
     std::cout << "Total vertices: " << vertexCount << '\n';
@@ -44,25 +41,16 @@ void MapRenderer::init(const Map& map,
 
 void MapRenderer::draw(sf::RenderTarget& target) {
 
-    if (shapeBufferBuildings)
-        shapeBufferBuildings->draw(target);
+    for (const auto& renderBuffer : renderBuffers) {
 
-    if (lineBufferAllWays)
-        lineBufferAllWays->draw(target);
-
-    if (lineBufferRoads)
-        lineBufferRoads->draw(target);
-
-    if (lineBufferBuildings)
-        lineBufferBuildings->draw(target);
-
-    if (nodeBufferIntersections)
-        nodeBufferIntersections->draw(target);
+        renderBuffer->draw(target);
+    }
 }
 
 void MapRenderer::createBufferFromAllWays(const Map& map) {
 
-    lineBufferAllWays = std::make_unique<LineBuffer>(map.getAllWays(), config);
+    auto buffer = std::make_unique<LineBuffer>(map.getAllWays(), config);
+    renderBuffers.push_back(std::move(buffer));
 }
 
 void MapRenderer::createLineBufferFromRoads(const Map& map) {
@@ -74,7 +62,8 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
         roadWays.push_back(road.getWay());
     }
 
-    lineBufferRoads = std::make_unique<LineBuffer>(roadWays, config);
+    auto buffer = std::make_unique<LineBuffer>(roadWays, config);
+    renderBuffers.push_back(std::move(buffer));
 }
 
 void MapRenderer::createLineBufferFromBuildings(const Map& map) {
@@ -91,7 +80,8 @@ void MapRenderer::createLineBufferFromBuildings(const Map& map) {
         buildingWays.insert(buildingWays.end(), innerWays.begin(), innerWays.end());
     }
 
-    lineBufferBuildings = std::make_unique<LineBuffer>(buildingWays, config);
+    auto buffer = std::make_unique<LineBuffer>(buildingWays, config);
+    renderBuffers.push_back(std::move(buffer));
 }
 
 void MapRenderer::createShapeBufferFromBuildings(const Map& map) {
@@ -104,7 +94,8 @@ void MapRenderer::createShapeBufferFromBuildings(const Map& map) {
         shapes.emplace_back(building.getOuterWays(), building.getInnerWays());
     }
 
-    shapeBufferBuildings = std::make_unique<ShapeBuffer>(shapes, config.buildingLineMode);
+    auto buffer = std::make_unique<ShapeBuffer>(shapes, config.buildingLineMode);
+    renderBuffers.push_back(std::move(buffer));
 }
 
 std::size_t MapRenderer::getBuildingWayCount(const Map& map) const {
@@ -132,5 +123,6 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
         nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat);
     }
 
-    nodeBufferIntersections = std::make_unique<ShapeBuffer>(nodes);
+    auto buffer = std::make_unique<ShapeBuffer>(nodes);
+    renderBuffers.push_back(std::move(buffer));
 }

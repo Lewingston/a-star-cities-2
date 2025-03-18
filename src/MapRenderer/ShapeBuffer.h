@@ -1,20 +1,18 @@
 #pragma once
 
+#include "RenderBufferInterface.h"
+
 #include <SFML/Graphics/VertexBuffer.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 
 #include <vector>
-
-namespace sf {
-    class RenderTarget;
-}
 
 namespace asc2 {
 
     class ShapeRenderer;
     class NodeRenderer;
 
-    class ShapeBuffer {
+    class ShapeBuffer : public RenderBufferInterface {
 
         public:
 
@@ -22,11 +20,11 @@ namespace asc2 {
 
             ShapeBuffer(const std::vector<NodeRenderer>& nodes);
 
-            void draw(sf::RenderTarget& target);
+            void draw(sf::RenderTarget& target) override;
 
-            [[nodiscard]] std::size_t getVertexCount() const noexcept;
-            [[nodiscard]] std::size_t getEdgeCount() const noexcept;
-            [[nodiscard]] std::size_t getPolygonCount() const noexcept;
+            [[nodiscard]] std::size_t getVertexCount() const noexcept override;
+            [[nodiscard]] std::size_t getLineCount() const noexcept override;
+            [[nodiscard]] std::size_t getPolygonCount() const noexcept override;
 
         private:
 

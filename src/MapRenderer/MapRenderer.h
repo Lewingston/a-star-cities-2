@@ -1,10 +1,10 @@
 #pragma once
 
 #include "RenderConfig.h"
-#include "LineBuffer.h"
-#include "ShapeBuffer.h"
+#include "RenderBufferInterface.h"
 
 #include <memory>
+#include <vector>
 
 namespace sf {
     class RenderTarget;
@@ -35,11 +35,7 @@ namespace asc2 {
 
             [[nodiscard]] std::size_t getBuildingWayCount(const Map& map) const;
 
-            std::unique_ptr<LineBuffer>  lineBufferAllWays;
-            std::unique_ptr<LineBuffer>  lineBufferRoads;
-            std::unique_ptr<LineBuffer>  lineBufferBuildings;
-            std::unique_ptr<ShapeBuffer> shapeBufferBuildings;
-            std::unique_ptr<ShapeBuffer> nodeBufferIntersections;
+            std::vector<std::unique_ptr<RenderBufferInterface>> renderBuffers;
 
             RenderConfig config;
 

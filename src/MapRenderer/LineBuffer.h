@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RenderBufferInterface.h"
 #include "RenderConfig.h"
 
 #include <SFML/Graphics/VertexBuffer.hpp>
@@ -13,7 +14,7 @@ namespace asc2 {
 
     class Way;
 
-    class LineBuffer {
+    class LineBuffer : public RenderBufferInterface {
 
         public:
 
@@ -21,14 +22,18 @@ namespace asc2 {
 
             LineBuffer(const std::map<uint64_t, Way>& ways, const RenderConfig& config);
 
-            void draw(sf::RenderTarget& target);
+            void draw(sf::RenderTarget& target) override;
 
-            [[nodiscard]] std::size_t getNumberOfLines() const noexcept {
+            [[nodiscard]] std::size_t getVertexCount() const noexcept override {
+                return vertexBuffer.getVertexCount();
+            }
+
+            [[nodiscard]] std::size_t getLineCount() const noexcept override {
                 return vertexBuffer.getVertexCount() / 2;
             }
 
-            [[nodiscard]] std::size_t getVertexCount() const noexcept {
-                return vertexBuffer.getVertexCount();
+            [[nodiscard]] std::size_t getPolygonCount() const noexcept override {
+                return 0;
             }
 
         private:
