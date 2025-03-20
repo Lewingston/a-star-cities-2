@@ -82,7 +82,7 @@ void LineBuffer::updateVertexBuffer() {
 
 bool LineBuffer::wayIsSuitableForRendering(const Way& way) const {
 
-    if (!config.displayIncomplete && !way.isComplete)
+    if (!config.displayIncomplete && !way.isComplete())
         return false;
 
     if (way.getNodeCount() <= 1)
@@ -96,7 +96,7 @@ void LineBuffer::addWayToVertexArray(const Way& way,
 
     const sf::Color color = Color::getRandomColor();
 
-    for (auto iter = way.nodes.begin(); iter != way.nodes.end(); iter++) {
+    for (auto iter = way.getNodes().begin(); iter != way.getNodes().end(); iter++) {
 
         const auto pos = sf::Vector2f{static_cast<float>(iter->get().lon),
                                       -static_cast<float>(iter->get().lat)};
@@ -106,7 +106,7 @@ void LineBuffer::addWayToVertexArray(const Way& way,
         vertexArray.emplace_back(pos, color);
 
         // Add all nodes twic. Except first and last node in way
-        if (iter != way.nodes.begin() && iter != way.nodes.end() - 1) {
+        if (iter != way.getNodes().begin() && iter != way.getNodes().end() - 1) {
             vertexArray.emplace_back(pos, color);
         }
     }

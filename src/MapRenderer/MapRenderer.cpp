@@ -22,7 +22,7 @@ void MapRenderer::init(const Map& map,
 
     //createShapeBufferFromBuildings(map);
 
-    //createNodeBufferFromIntersections(map);
+    createNodeBufferFromIntersections(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
@@ -58,7 +58,8 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
     std::vector<std::reference_wrapper<const Way>> roadWays;
     roadWays.reserve(map.getAllRoads().size());
 
-    for (const Road& road : map.getAllRoads()) {
+    //for (const Road& road : map.getAllRoads()) {
+    for (const auto& [id, road] : map.getAllRoads()) {
         roadWays.push_back(road.getWay());
     }
 

@@ -41,16 +41,18 @@ namespace asc2 {
                              const std::vector<uint64_t>& outerWayIds,
                              const std::vector<uint64_t>& innerWayIds);
 
+            void splitRoadsOnIntersections();
+
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& ids) const;
             [[nodiscard]] std::vector<std::reference_wrapper<const Way>> getWays(
                 const std::vector<uint64_t>& ids) const;
 
-            [[nodiscard]] const std::map<uint64_t, Node>& getAllNodes() const noexcept { return nodes; }
-            [[nodiscard]] const std::map<uint64_t, Way>&  getAllWays()  const noexcept { return ways;  }
+            [[nodiscard]] const std::map<uint64_t, Node>&         getAllNodes()         const noexcept { return nodes;         }
+            [[nodiscard]] const std::map<uint64_t, Way>&          getAllWays()          const noexcept { return ways;          }
             [[nodiscard]] const std::map<uint64_t, Intersection>& getAllIntersections() const noexcept { return intersections; }
+            [[nodiscard]] const std::map<uint64_t, Road>&         getAllRoads()         const noexcept { return roads;         }
 
-            [[nodiscard]] const std::vector<Road>&     getAllRoads()     const noexcept { return roads;     }
             [[nodiscard]] const std::vector<Building>& getAllBuildings() const noexcept { return buildings; }
 
             [[nodiscard]] std::pair<double, double> getCenter() const;
@@ -59,12 +61,15 @@ namespace asc2 {
 
             void addRoad(RoadType type, const Way& way);
 
+            void addRoadAndWays(const Road::NewRoadData& data);
+
             std::map<uint64_t, Node> nodes;
             std::map<uint64_t, Way>  ways;
 
             std::map<uint64_t, Intersection> intersections;
 
-            std::vector<Road> roads;
+            std::map<uint64_t, Road> roads;
+            //std::vector<Road> roads;
             std::vector<Building> buildings;
 
             Dimensions dimensions;

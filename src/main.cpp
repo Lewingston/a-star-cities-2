@@ -16,10 +16,10 @@ int main(int argc, const char** args) {
 
     MapParserConfig parserConfig {
         .mapFeatures = {
-            MapFeatureType::NO_TYPE,
-            MapFeatureType::UNKNOWN,
-            MapFeatureType::BUILDING,
-            //MapFeatureType::HIGHWAY,
+            //MapFeatureType::NO_TYPE,
+            //MapFeatureType::UNKNOWN,
+            //MapFeatureType::BUILDING,
+            MapFeatureType::HIGHWAY,
             //MapFeatureType::RAILWAY,
         },
         .includeIncompleteWays = enableIncomplete
@@ -32,7 +32,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/test/speyer.json";
+        std::string filePath = "../../maps/roads_only/speyer.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -47,6 +47,8 @@ int main(int argc, const char** args) {
         std::cerr << e.what() << '\n';
         return 1;
     }
+
+    map->splitRoadsOnIntersections();
 
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';

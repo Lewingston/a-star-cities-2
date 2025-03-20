@@ -20,10 +20,10 @@ void Map::addNode(const Node& node) {
 
 void Map::addWay(const Way& way) {
 
-    idHandler.updateUsedIds(way.id);
-    const auto [iter, success] = ways.emplace(way.id, way);
+    idHandler.updateUsedIds(way.getId());
+    const auto [iter, success] = ways.emplace(way.getId(), way);
     if (!success) {
-        std::cerr << "Failed to add way with id: " + std::to_string(way.id) + " to map!\n";
+        std::cerr << "Failed to add way with id: " + std::to_string(way.getId()) + " to map!\n";
     }
 }
 
@@ -38,10 +38,16 @@ void Map::addRoad(RoadType type, uint64_t wayId) {
 
 void Map::addRoad(RoadType type, const Way& way) {
 
-    Road& road = roads.emplace_back(type, way);
+    auto [iter, success] = roads.emplace(way.getId(), Road(type, way));
+    if (!success) {
+        std::cerr << "Failed to add road with id: " << way.getId() << " - Duplicate road in map\n";
+        return;
+    }
+
+    Road& road = iter->second;
 
     // add new intersections for all nodes in road
-    for (const Node& node : road.getWay().nodes) {
+    for (const Node& node : road.getWay().getNodes()) {
 
         auto [iter, success] = intersections.insert({node.id, Intersection(node)});
         iter->second.addRoad(road);
@@ -93,6 +99,67 @@ void Map::addBuilding(BuildingType type,
         outerWays,
         innerWays
     });
+}
+
+void Map::splitRoadsOnIntersections() {
+
+    std::vector<Road::NewRoadData> newRoads;
+    std::vector<uint64_t> removeRoadIds;
+
+    // iterate over all roads
+    for (auto& [id, road] : roads) {
+
+        const std::vector<Road::NewRoadData> roads = road.splitRoadOnIntersections();
+        newRoads.insert(newRoads.begin(), roads.begin(), roads.end());
+
+        if (roads.size() > 0) {
+            removeRoadIds.emplace_back(id);
+            road.removeFromIntersections();
+        }
+    }
+
+    // remove all old roads there ways
+    for (const uint64_t roadId : removeRoadIds) {
+        roads.erase(roadId);
+        ways.erase(roadId);
+    }
+
+    // add new roads and ways
+    for (const auto& data : newRoads) {
+
+        addRoadAndWays(data);
+    }
+
+    std::cout << removeRoadIds.size() << " roads removed.\n";
+    std::cout << newRoads.size() << " new roads added.\n";
+}
+
+void Map::addRoadAndWays(const Road::NewRoadData& data) {
+
+    std::vector<std::reference_wrapper<const Node>> nodes;
+    for (const auto& intersection : data.intersections)
+        nodes.emplace_back(intersection.get().getNode());
+
+    const uint64_t newId = idHandler.getNewId();
+
+    // add new way
+    const auto [wayIter, waySuccess] = ways.emplace(newId, Way(newId, nodes, true));
+    if (!waySuccess) {
+        std::cerr << "Failed to insert way: " << newId << '\n';
+        return;
+    }
+
+    // add new road
+    const auto [roadIter, roadSuccess] = roads.emplace(newId, Road(data.type, wayIter->second));
+    if (!roadSuccess) {
+        std::cerr << "Failed to insert road: " << newId << '\n';
+        return;
+    }
+
+    // add road to intersections
+    for (auto& intersection : data.intersections) {
+        intersection.get().addRoad(roadIter->second);
+    }
 }
 
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(

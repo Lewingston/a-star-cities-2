@@ -5,7 +5,7 @@ using namespace asc2;
 
 Building::Building(BuildingType type, const Way& way) :
     type(type),
-    id (way.id),
+    id (way.getId()),
     isRelation(false),
     outerWays({way}) {}
 

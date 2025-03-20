@@ -36,7 +36,7 @@ std::vector<std::pair<float, float>> ShapeRenderer::getVerticesForShape(const Wa
     // first add outer shape
     points.push_back({});
     points.back().reserve(outerShape.getNodeCount() - 1);
-    for (auto iter = outerShape.nodes.begin(); iter != outerShape.nodes.end() - 1; iter++) {
+    for (auto iter = outerShape.getNodes().begin(); iter != outerShape.getNodes().end() - 1; iter++) {
         points.back().push_back({iter->get().lon, iter->get().lat});
     }
 
@@ -44,7 +44,7 @@ std::vector<std::pair<float, float>> ShapeRenderer::getVerticesForShape(const Wa
     for (const Way& innerWay : innerShapes) {
         points.push_back({});
         points.back().reserve(innerWay.getNodeCount() - 1);
-        for (auto iter = innerWay.nodes.begin(); iter != innerWay.nodes.end() - 1; iter++) {
+        for (auto iter = innerWay.getNodes().begin(); iter != innerWay.getNodes().end() - 1; iter++) {
             points.back().push_back({iter->get().lon, iter->get().lat});
         }
     }

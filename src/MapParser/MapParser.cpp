@@ -125,11 +125,7 @@ void MapParser::addWaysToMap() {
         if (!config.includeIncompleteWays && !way.isComplete && !way.isPartOfRelation)
             continue;
 
-        map->addWay({
-            .id         = way.id,
-            .nodes      = nodes,
-            .isComplete = way.isComplete
-        });
+        map->addWay(asc2::Way(way.id, nodes, way.isComplete));
     }
 }
 
