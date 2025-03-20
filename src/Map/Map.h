@@ -42,6 +42,7 @@ namespace asc2 {
                              const std::vector<uint64_t>& innerWayIds);
 
             void splitRoadsOnIntersections();
+            void fuseRoads();
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& ids) const;
@@ -61,15 +62,14 @@ namespace asc2 {
 
             void addRoad(RoadType type, const Way& way);
 
+            void removeRoadAndWay(Road& road);
+
             void addRoadAndWays(const Road::NewRoadData& data);
 
             std::map<uint64_t, Node> nodes;
             std::map<uint64_t, Way>  ways;
-
             std::map<uint64_t, Intersection> intersections;
-
             std::map<uint64_t, Road> roads;
-            //std::vector<Road> roads;
             std::vector<Building> buildings;
 
             Dimensions dimensions;

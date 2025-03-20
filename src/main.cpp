@@ -49,6 +49,7 @@ int main(int argc, const char** args) {
     }
 
     map->splitRoadsOnIntersections();
+    map->fuseRoads();
 
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';

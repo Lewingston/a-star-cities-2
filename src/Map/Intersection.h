@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Node.h"
+
 #include <vector>
 
 namespace asc2 {
@@ -13,18 +15,20 @@ namespace asc2 {
 
             Intersection(const Node& node);
 
-            void addRoad(const Road& road);
+            void addRoad(Road& road);
 
             void removeRoad(const Road& road);
 
             [[nodiscard]] const Node& getNode() const noexcept { return node; }
 
-            [[nodiscard]] const std::vector<std::reference_wrapper<const Road>>& getRoads() const noexcept { return roads; }
+            [[nodiscard]] const std::vector<std::reference_wrapper<Road>>& getRoads() const noexcept { return roads; }
+
+            bool operator== (const Intersection& inter) const { return inter.getNode().id == node.id; }
 
         private:
 
             const Node& node;
 
-            std::vector<std::reference_wrapper<const Road>> roads;
+            std::vector<std::reference_wrapper<Road>> roads;
     };
 }

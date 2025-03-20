@@ -9,7 +9,7 @@ using namespace asc2;
 Intersection::Intersection(const Node& node) :
     node(node) {}
 
-void Intersection::addRoad(const Road& rode) {
+void Intersection::addRoad(Road& rode) {
 
     roads.emplace_back(rode);
 }

@@ -16,7 +16,7 @@ namespace asc2 {
 
             struct NewRoadData {
                 RoadType type;
-                std::vector<std::reference_wrapper<Intersection>> intersections;
+                std::vector<std::reference_wrapper<Intersection>> intersections {};
             };
 
             Road(RoadType type, const Way& way) : 
@@ -27,6 +27,10 @@ namespace asc2 {
 
             [[nodiscard]] const Way& getWay() const noexcept { return way; }
 
+            [[nodiscard]] RoadType getType() const noexcept { return type; }
+
+            [[nodiscard]] const std::vector<std::reference_wrapper<Intersection>>& getIntersections() const noexcept { return intersections; }
+
             void addIntersection(Intersection& intersection);
 
             std::vector<NewRoadData> splitRoadOnIntersections() const;
@@ -36,6 +40,7 @@ namespace asc2 {
         private:
 
             RoadType type;
+
             const Way& way;
 
             std::vector<std::reference_wrapper<Intersection>> intersections;
