@@ -101,6 +101,13 @@ void Map::addBuilding(BuildingType type,
     });
 }
 
+void Map::optimizeIntersecions() {
+
+    removeUnnecessaryIntersections();
+    splitRoadsOnIntersections();
+    fuseRoads();
+}
+
 void Map::splitRoadsOnIntersections() {
 
     std::vector<Road::NewRoadData> newRoads;
@@ -124,11 +131,20 @@ void Map::splitRoadsOnIntersections() {
 
     // add new roads and ways
     for (const auto& data : newRoads) {
-        addRoadAndWays(data);
+        addRoadAndWay(data);
     }
 
     std::cout << removeRoads.size() << " roads removed.\n";
     std::cout << newRoads.size() << " new roads added.\n";
+}
+
+void Map::removeIntersection(Intersection& intersection) {
+
+    for (Road& road : intersection.getRoads()) {
+        road.removeIntersection(intersection);
+    }
+
+    intersections.erase(intersection.getId());
 }
 
 void Map::removeRoadAndWay(Road& road) {
@@ -141,16 +157,12 @@ void Map::removeRoadAndWay(Road& road) {
     ways.erase(wayId);
 }
 
-void Map::addRoadAndWays(const Road::NewRoadData& data) {
-
-    std::vector<std::reference_wrapper<const Node>> nodes;
-    for (const auto& intersection : data.intersections)
-        nodes.emplace_back(intersection.get().getNode());
+void Map::addRoadAndWay(const Road::NewRoadData& data) {
 
     const uint64_t newId = idHandler.getNewId();
 
     // add new way
-    const auto [wayIter, waySuccess] = ways.emplace(newId, Way(newId, nodes, true));
+    const auto [wayIter, waySuccess] = ways.emplace(newId, Way(newId, data.nodes, true));
     if (!waySuccess) {
         std::cerr << "Failed to insert way: " << newId << '\n';
         return;
@@ -170,55 +182,63 @@ void Map::addRoadAndWays(const Road::NewRoadData& data) {
     }
 }
 
+void Map::removeUnnecessaryIntersections() {
+
+    std::vector<std::reference_wrapper<Intersection>> removeIntersections;
+    for (auto& [id, intersection] : intersections) {
+
+        if (intersection.getRoads().size() >= 2)
+            continue;
+
+        removeIntersections.emplace_back(intersection);
+    }
+
+    for (Intersection& intersection : removeIntersections) {
+        removeIntersection(intersection);
+    }
+
+    std::cout << "Unnecessary intersections removed: " << removeIntersections.size() << '\n';
+}
+
 void Map::fuseRoads() {
 
-    std::size_t intersectionCount = 0;
+    std::vector<std::reference_wrapper<Intersection>> removeIntersections;
 
-    for (auto [id, intersection] : intersections) {
+    for (auto& [id, intersection] : intersections) {
 
-        if (intersection.getRoads().size() != 2)
+        if (intersection.getRoads().size() != 2) {
             continue;
+        }
 
         Road& r1 = intersection.getRoads().front().get();
         Road& r2 = intersection.getRoads().back().get();
 
-        if (r1.getId() == r2.getId())
+        if (r1.getId() == r2.getId()) {
             continue;
+        }
 
         if (r1.getType() != r2.getType()) {
             continue;
         }
 
-        Road::NewRoadData newRoad{r1.getType()};
-
-        const auto r1Front = r1.getIntersections().front().get();
-        const auto r2Front = r2.getIntersections().front().get();
-        const auto r1Back  = r1.getIntersections().back().get();
-        const auto r2Back  = r2.getIntersections().back().get();
-
-        if (r1Front == r2Front && r1Front == intersection) {
-            newRoad.intersections.insert(newRoad.intersections.end(), r1.getIntersections().rbegin(), r1.getIntersections().rend());
-            newRoad.intersections.insert(newRoad.intersections.end(), r2.getIntersections().begin() + 1, r2.getIntersections().end());
-        } else if (r1Front == r2Back && r1Front == intersection) {
-            newRoad.intersections.insert(newRoad.intersections.end(), r1.getIntersections().rbegin(), r1.getIntersections().rend());
-            newRoad.intersections.insert(newRoad.intersections.end(), r2.getIntersections().rbegin() + 1, r2.getIntersections().rend());
-        } else if (r1Back == r2Front && r1Back == intersection) {
-            newRoad.intersections.insert(newRoad.intersections.end(), r1.getIntersections().begin(), r1.getIntersections().end());
-            newRoad.intersections.insert(newRoad.intersections.end(), r2.getIntersections().begin() + 1, r2.getIntersections().end());
-        } else if (r1Back == r2Back && r1Back == intersection) {
-            newRoad.intersections.insert(newRoad.intersections.end(), r1.getIntersections().begin(), r1.getIntersections().end());
-            newRoad.intersections.insert(newRoad.intersections.end(), r2.getIntersections().rbegin() + 1, r2.getIntersections().rend());
+        const Road::NewRoadData newRoad = r1.fuse(r2);
+        if (newRoad.nodes.size() == 0) {
+            std::cout << "Unable to fuse roads: " << r1.getId() << " - " << r2.getId() << '\n';
+            continue;
         }
 
         removeRoadAndWay(r1);
         removeRoadAndWay(r2);
-        
-        addRoadAndWays(newRoad);
+        addRoadAndWay(newRoad);
 
-        intersectionCount++;
+        removeIntersections.emplace_back(intersection);
     }
 
-    std::cout << "Fused intersections: " << intersectionCount << '\n';
+    for (auto inter : removeIntersections) {
+        removeIntersection(inter);
+    }
+
+    std::cout << "Fused intersections: " << removeIntersections.size() << '\n';
 }
 
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(

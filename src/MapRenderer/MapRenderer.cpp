@@ -118,8 +118,8 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
 
     for (const auto& [id, intersection] : map.getAllIntersections()) {
 
-        if (intersection.getRoads().size() < 2)
-            continue;
+        /*if (intersection.getRoads().size() < 2)
+            continue;*/
 
         nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat);
     }

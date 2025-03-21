@@ -32,7 +32,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/roads_only/speyer.json";
+        std::string filePath = "../../maps/roads_only/new_york.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -48,8 +48,7 @@ int main(int argc, const char** args) {
         return 1;
     }
 
-    map->splitRoadsOnIntersections();
-    map->fuseRoads();
+    map->optimizeIntersecions();
 
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';

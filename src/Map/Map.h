@@ -41,7 +41,10 @@ namespace asc2 {
                              const std::vector<uint64_t>& outerWayIds,
                              const std::vector<uint64_t>& innerWayIds);
 
+            void optimizeIntersecions();
+
             void splitRoadsOnIntersections();
+            void removeUnnecessaryIntersections();
             void fuseRoads();
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
@@ -61,10 +64,11 @@ namespace asc2 {
         private:
 
             void addRoad(RoadType type, const Way& way);
+            void addRoadAndWay(const Road::NewRoadData& data);
 
+            void removeIntersection(Intersection& intersection);
             void removeRoadAndWay(Road& road);
 
-            void addRoadAndWays(const Road::NewRoadData& data);
 
             std::map<uint64_t, Node> nodes;
             std::map<uint64_t, Way>  ways;

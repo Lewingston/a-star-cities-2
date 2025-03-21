@@ -16,6 +16,7 @@ namespace asc2 {
 
             struct NewRoadData {
                 RoadType type;
+                std::vector<std::reference_wrapper<const Node>> nodes {};
                 std::vector<std::reference_wrapper<Intersection>> intersections {};
             };
 
@@ -33,7 +34,11 @@ namespace asc2 {
 
             void addIntersection(Intersection& intersection);
 
+            void removeIntersection(const Intersection& intersection);
+
             std::vector<NewRoadData> splitRoadOnIntersections() const;
+
+            NewRoadData fuse(const Road& road) const;
 
             void removeFromIntersections();
 

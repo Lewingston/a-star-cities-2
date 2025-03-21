@@ -19,6 +19,8 @@ namespace asc2 {
 
             void removeRoad(const Road& road);
 
+            [[nodiscard]] uint64_t getId() const noexcept { return node.id; }
+
             [[nodiscard]] const Node& getNode() const noexcept { return node; }
 
             [[nodiscard]] const std::vector<std::reference_wrapper<Road>>& getRoads() const noexcept { return roads; }
