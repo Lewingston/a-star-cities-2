@@ -150,7 +150,7 @@ void Window::resetView() {
     }
 
     auto view = window.getView();
-    view.setSize(sf::Vector2f(windowWidth, windowHeight));
+    view.setSize(sf::Vector2f(windowWidth, windowHeight)); // reset size, to reset zoom level
     view.setCenter(sf::Vector2f(x, y));
     view.zoom(zoom);
     window.setView(view);
