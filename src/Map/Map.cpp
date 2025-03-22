@@ -4,10 +4,11 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <numeric>
 
 using namespace asc2;
 
-void Map::addNode(const Node& node) {
+const Node& Map::addNode(const Node& node) {
 
     idHandler.updateUsedIds(node.id);
     const auto [iter, success] = nodes.emplace(node.id, node);
@@ -16,6 +17,8 @@ void Map::addNode(const Node& node) {
     } else {
         dimensions.adjust(node.lon, node.lat);
     }
+
+    return iter->second;
 }
 
 void Map::addWay(const Way& way) {
@@ -251,7 +254,21 @@ void Map::addIntersectionsToEndPoints() {
 
 void Map::addIntersectionsToEndOfRoad(Road& road) {
 
-    if (road.getWay().getNodes().front().get().id != road.getIntersections().front().get().getId()) {
+    if (road.getWay().isLoop())
+        return;
+
+    const uint64_t firstNodeId = road.getWay().getNodes().front().get().id;
+    const uint64_t lastNodeId  = road.getWay().getNodes().back().get().id;
+
+    const uint64_t firstInterId = road.getIntersections().size() > 0 ?
+                                      road.getIntersections().front().get().getId() :
+                                      std::numeric_limits<uint64_t>::max();
+
+    const uint64_t lastInterId = road.getIntersections().size() > 0 ?
+                                     road.getIntersections().back().get().getId() :
+                                     std::numeric_limits<uint64_t>::max();
+
+    if (firstNodeId != firstInterId) {
 
         const Node& node = road.getWay().getNodes().front();
         auto [inter, success] = intersections.insert({node.id, node});
@@ -259,13 +276,93 @@ void Map::addIntersectionsToEndOfRoad(Road& road) {
         inter->second.addRoad(road);
     }
 
-    if (road.getWay().getNodes().back().get().id != road.getIntersections().back().get().getId()) {
+    if (lastNodeId != lastInterId) {
 
         const Node& node = road.getWay().getNodes().back();
         auto [inter, success] = intersections.insert({node.id , node});
         road.addIntersection(inter->second);
         inter->second.addRoad(road);
     }
+}
+
+void Map::segmentRoads(float length) {
+
+    length = length * 360.0f / 40'000'000.0f;
+
+    std::vector<Road::NewRoadData> newRoads;
+    std::vector<std::reference_wrapper<Road>> removeRoads;
+
+    for (auto& [id, road] : roads) {
+        
+        const auto _newRoads = segmentRoad(road, length);
+        if (_newRoads.size() > 1) {
+            for (const auto& road : _newRoads)
+                newRoads.emplace_back(road);
+            removeRoads.emplace_back(road);
+        } else if (_newRoads.size() == 1) {
+            std::cerr << "Segmenting one road into one road. Something went wrong!\n";
+        }
+    }
+
+    for (Road& road : removeRoads) {
+        removeRoadAndWay(road);
+    }
+
+    for (const auto& newRoad : newRoads) {
+        addRoadAndWay(newRoad);
+    }
+}
+
+std::vector<Road::NewRoadData> Map::segmentRoad(Road& road, float length) {
+
+    const std::vector<Way::NewNode> newNodes = road.getWay().segmentate(length);
+    if (newNodes.size() == 0)
+        return {};
+
+    std::vector<Road::NewRoadData> newRoads;
+    newRoads.push_back(Road::NewRoadData {
+        .type          = road.getType(), 
+        .nodes         = {road.getWay().getNodes().front().get()},
+        .intersections = {road.getIntersections().front()}
+        });
+
+    std::size_t index = 1;
+    auto nextNewNode = newNodes.begin();
+
+    for (auto nodeIter = road.getWay().getNodes().begin() + 1; nodeIter != road.getWay().getNodes().end(); nodeIter++) {
+
+
+        while (nextNewNode != newNodes.end() && index == nextNewNode->index) {
+            const Node&   node         = addNode(Node{idHandler.getNewId(), nextNewNode->lon, nextNewNode->lat});
+            Intersection& intersection = intersections.insert({node.id, Intersection(node)}).first->second;
+
+            newRoads.back().nodes.emplace_back(node);
+            newRoads.back().intersections.emplace_back(intersection);
+
+            nextNewNode = std::next(nextNewNode);
+
+            newRoads.push_back(Road::NewRoadData {
+                .type          = road.getType(),
+                .nodes         = { node },
+                .intersections = { intersection }
+            });
+
+            index++;
+        }
+
+        newRoads.back().nodes.emplace_back(nodeIter->get());
+        index++;
+    }
+
+    newRoads.back().intersections.emplace_back(road.getIntersections().back());
+
+    /*for (const auto& newNode : newNodes) {
+
+        const Node& node = addNode(Node{idHandler.getNewId(), newNode.lon, newNode.lat});
+        intersections.insert({node.id, Intersection(node)});
+    }*/
+
+    return newRoads;
 }
 
 std::size_t Map::removeRoadsWithoutIntersections() {
@@ -334,6 +431,16 @@ std::vector<std::reference_wrapper<const Way>> Map::getWays(
 std::pair<double, double> Map::getCenter() const {
 
     return dimensions.getCenter();
+}
+
+float Map::getTotalRoadLength() const {
+
+    const float length = std::accumulate(roads.begin(), roads.end(), 0.0f,
+        [](float length, const auto& roadMapEntry) -> float {
+            return length + roadMapEntry.second.getLength();
+        });
+
+    return length * 40'000'000.0f / 360.0f;
 }
 
 /************************************************************/

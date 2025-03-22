@@ -12,5 +12,7 @@ namespace asc2 {
         const double lat;
 
         float distance(const Node& node) const;
+
+        std::pair<double, double> pointBetween(const Node& node, float distance) const;
     };
 }

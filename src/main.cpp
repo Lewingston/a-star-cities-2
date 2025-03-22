@@ -57,6 +57,13 @@ int main(int argc, const char** args) {
 
     map->addIntersectionsToEndPoints();
 
+    map->segmentRoads(50.0f);
+
+    const float totalRoadLength = map->getTotalRoadLength();
+    const float averageRoadLength = totalRoadLength / static_cast<float>(map->getAllRoads().size());
+    std::cout << "Total road length: " << totalRoadLength << "m\n";
+    std::cout << "Average road length: " << averageRoadLength << "m\n";
+
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
 

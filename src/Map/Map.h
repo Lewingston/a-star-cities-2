@@ -31,7 +31,7 @@ namespace asc2 {
 
             Map() = default;
 
-            void addNode(const Node& node);
+            const Node& addNode(const Node& node);
             
             void addWay(const Way& way);
 
@@ -49,6 +49,9 @@ namespace asc2 {
             void fuseRoads();
             void addIntersectionsToEndPoints();
 
+            void segmentRoads(float length);
+            std::vector<Road::NewRoadData> segmentRoad(Road& road, float length);
+
             std::size_t removeRoadsWithoutIntersections();
             void removeNetwork(const NetworkFinder::Network& network);
 
@@ -65,6 +68,8 @@ namespace asc2 {
             [[nodiscard]] const std::vector<Building>& getAllBuildings() const noexcept { return buildings; }
 
             [[nodiscard]] std::pair<double, double> getCenter() const;
+
+            [[nodiscard]] float getTotalRoadLength() const;
 
         private:
 

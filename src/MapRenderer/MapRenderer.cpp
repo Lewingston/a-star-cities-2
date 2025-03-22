@@ -25,7 +25,7 @@ void MapRenderer::init(const Map& map,
 
     //createShapeBufferFromBuildings(map);
 
-    createNodeBufferFromIntersections(map);
+    //createNodeBufferFromIntersections(map);
 
     //createBuffersForRoadNetworks(map);
 
@@ -63,9 +63,10 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
     std::vector<LineRenderer> lines;
     lines.reserve(map.getAllRoads().size());
 
-    const sf::Color color = Color::getRandomColor();
+    //const sf::Color color = Color::getRandomColor();
 
     for (const auto& [id, road] : map.getAllRoads()) {
+        const sf::Color color = Color::getRandomColor();
         lines.emplace_back(road.getWay(), color);
     }
 
@@ -122,10 +123,11 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
     std::vector<NodeRenderer> nodes;
     nodes.reserve(map.getAllIntersections().size());
 
-    const sf::Color color = Color::getRandomColor();
+    //const sf::Color color = Color::getRandomColor();
 
     for (const auto& [id, intersection] : map.getAllIntersections()) {
 
+        const sf::Color color = Color::getRandomColor();
         nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat, color);
     }
 
