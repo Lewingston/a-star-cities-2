@@ -71,6 +71,8 @@ namespace asc2 {
 
             [[nodiscard]] float getTotalRoadLength() const;
 
+            [[nodiscard]] const Dimensions& getDimensions() const noexcept { return dimensions; }
+
         private:
 
             void addRoad(RoadType type, const Way& way);

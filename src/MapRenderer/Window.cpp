@@ -43,6 +43,12 @@ void Window::onEvent(const sf::Event& event) {
     } else if (const auto* mouseMove = event.getIf<sf::Event::MouseMoved>()) {
 
         onMouseMoved(*mouseMove);
+
+    } else if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+
+        if (keyPressed->code == sf::Keyboard::Key::C) {
+            resetView();
+        }
     }
 }
 
@@ -54,6 +60,8 @@ void Window::draw() {
 
     drawCenter();
 
+    window.draw(mapBorder.data(), mapBorder.size(), sf::PrimitiveType::LineStrip);
+
     window.display();
 }
 
@@ -61,6 +69,11 @@ void Window::drawCenter() {
 
     const float size = 180.0f / 40'000'000 * 15.0f;
     const sf::Color color = sf::Color::Red;
+
+    sf::Vector2f mapCenter{
+        static_cast<float>(mapDimensions.getCenter().first),
+        static_cast<float>(-mapDimensions.getCenter().second)
+    };
 
     std::array center = {
         sf::Vertex{sf::Vector2f(size, size) + mapCenter, color},
@@ -105,7 +118,7 @@ void Window::onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent) 
 
 void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
 
         auto view = window.getView();
 
@@ -119,6 +132,30 @@ void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
     mousePosition = mouseMovedEvent.position;
 }
 
+void Window::resetView() {
+
+    float x = static_cast<float>(mapDimensions.getCenter().first);
+    float y = static_cast<float>(-mapDimensions.getCenter().second);
+
+    const double mapWidth  = mapDimensions.maxLon - mapDimensions.minLon;
+    const double mapHeight = mapDimensions.maxLat - mapDimensions.minLat;
+
+    const double windowWidth  = static_cast<double>(window.getSize().x);
+    const double windowHeight = static_cast<double>(window.getSize().y);
+
+    if (mapWidth / mapHeight > windowWidth / windowHeight) {
+        zoom = static_cast<float>(mapWidth / windowWidth);
+    } else {
+        zoom = static_cast<float>(mapHeight / windowHeight);
+    }
+
+    auto view = window.getView();
+    view.setSize(sf::Vector2f(windowWidth, windowHeight));
+    view.setCenter(sf::Vector2f(x, y));
+    view.zoom(zoom);
+    window.setView(view);
+}
+
 void Window::renderMap(const Map& map,
                        const RenderConfig& config) {
 
@@ -126,12 +163,33 @@ void Window::renderMap(const Map& map,
 
     mapRenderer.init(map, config);
 
-    mapCenter = {static_cast<float>(map.getCenter().first), -static_cast<float>(map.getCenter().second)};
+    mapDimensions = map.getDimensions();
+
+    const double mapWidth  = map.getDimensions().maxLon - map.getDimensions().minLon;
+    const double mapHeight = map.getDimensions().maxLat - map.getDimensions().minLat;
+
+    const double windowWidth  = static_cast<double>(window.getSize().x);
+    const double windowHeight = static_cast<double>(window.getSize().y);
 
     zoom = 180.0f / 40'000'000.0f;
 
-    auto view = window.getView();
-    view.setCenter(mapCenter);
-    view.zoom(zoom);
-    window.setView(view);
+    createMapBorder(static_cast<float>(map.getDimensions().minLon), 
+                    static_cast<float>(-map.getDimensions().minLat),
+                    static_cast<float>(mapWidth),
+                    static_cast<float>(mapHeight));
+
+    resetView();
+}
+
+void Window::createMapBorder(float posX, float posY, float width, float height) {
+
+    sf::Color color = sf::Color::Red;
+
+    mapBorder = {
+        sf::Vertex{sf::Vector2f(posX,         posY),          color},
+        sf::Vertex{sf::Vector2f(posX + width, posY),          color},
+        sf::Vertex(sf::Vector2f(posX + width, posY - height), color),
+        sf::Vertex(sf::Vector2f(posX,         posY - height), color),
+        sf::Vertex{sf::Vector2f(posX,         posY),          color}
+    };
 }

@@ -50,7 +50,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/roads_only/speyer.json";
+        std::string filePath = "../../maps/roads_only/berlin.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -84,7 +84,7 @@ int main(int argc, const char** args) {
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
 
-    Window window(800, 600, ProgramInfo::name);
+    Window window(1600, 900, ProgramInfo::name);
     window.renderMap(*map, renderConfig);
     window.show();
 
