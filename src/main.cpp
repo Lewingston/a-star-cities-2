@@ -28,7 +28,24 @@ int main(int argc, const char** args) {
 
     RenderConfig renderConfig {
         .displayIncomplete = enableIncomplete,
-        .buildingLineMode  = false
+        .buildingLineMode  = false,
+        .backgroundColor   = sf::Color::Black,
+        .roadColor         = sf::Color(80, 0, 0),
+        .roadColors        = {
+            { RoadType::LIVING_STREET,  sf::Color(16, 16, 16) },
+            { RoadType::RESIDENTIAL,    sf::Color(18, 18, 18) },
+            { RoadType::UNCLASSIFIED,   sf::Color(20, 20, 20) },
+            { RoadType::TERTIARY,       sf::Color(22, 22, 22) },
+            { RoadType::TERTIARY_LINK,  sf::Color(22, 22, 22) },
+            { RoadType::SECONDARY,      sf::Color(24, 24, 24) },
+            { RoadType::SECONDARY_LINK, sf::Color(24, 24, 24) },
+            { RoadType::PRIMARY,        sf::Color(26, 26, 26) },
+            { RoadType::PRIMARY_LINK,   sf::Color(26, 26, 26) },
+            { RoadType::TRUNK,          sf::Color(28, 28, 28) },
+            { RoadType::TRUNK_LINK,     sf::Color(28, 28, 28) },
+            { RoadType::MOTORWAY,       sf::Color(30, 30, 30) },
+            { RoadType::MOTORWAY_LINK,  sf::Color(30, 30, 30) }
+        }
     };
 
     try {

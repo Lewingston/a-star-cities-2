@@ -48,7 +48,7 @@ void Window::onEvent(const sf::Event& event) {
 
 void Window::draw() {
 
-    window.clear(sf::Color::White);
+    window.clear(config.backgroundColor);
 
     mapRenderer.draw(window);
 
@@ -121,6 +121,8 @@ void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
 
 void Window::renderMap(const Map& map,
                        const RenderConfig& config) {
+
+    this->config = config;
 
     mapRenderer.init(map, config);
 

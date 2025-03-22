@@ -27,6 +27,8 @@ namespace asc2 {
 
             MapRenderer mapRenderer;
 
+            RenderConfig config;
+
             void onEvent(const sf::Event& event);
             void onResize(uint32_t newWidth, uint32_t newHeight);
             void onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent);

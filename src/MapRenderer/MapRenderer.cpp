@@ -63,10 +63,16 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
     std::vector<LineRenderer> lines;
     lines.reserve(map.getAllRoads().size());
 
-    //const sf::Color color = Color::getRandomColor();
-
     for (const auto& [id, road] : map.getAllRoads()) {
-        const sf::Color color = Color::getRandomColor();
+
+        const sf::Color color = [&]() -> sf::Color {
+            auto find = config.roadColors.find(road.getType());
+            if (find != config.roadColors.end())
+                return find->second;
+            else
+                return config.roadColor;
+        }();
+
         lines.emplace_back(road.getWay(), color);
     }
 
