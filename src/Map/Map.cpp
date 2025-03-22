@@ -245,6 +245,26 @@ void Map::addIntersectionsToEndPoints() {
     
     for (auto& [id, road] : roads) {
 
+        addIntersectionsToEndOfRoad(road);
+    }
+}
+
+void Map::addIntersectionsToEndOfRoad(Road& road) {
+
+    if (road.getWay().getNodes().front().get().id != road.getIntersections().front().get().getId()) {
+
+        const Node& node = road.getWay().getNodes().front();
+        auto [inter, success] = intersections.insert({node.id, node});
+        road.addIntersectionToFront(inter->second);
+        inter->second.addRoad(road);
+    }
+
+    if (road.getWay().getNodes().back().get().id != road.getIntersections().back().get().getId()) {
+
+        const Node& node = road.getWay().getNodes().back();
+        auto [inter, success] = intersections.insert({node.id , node});
+        road.addIntersection(inter->second);
+        inter->second.addRoad(road);
     }
 }
 

@@ -16,6 +16,11 @@ void Road::addIntersection(Intersection& intersection) {
     intersections.emplace_back(intersection);
 }
 
+void Road::addIntersectionToFront(Intersection& intersection) {
+
+    intersections.emplace(intersections.begin(), intersection);
+}
+
 void Road::removeIntersection(const Intersection& intersection) {
 
     intersections.erase(std::remove_if(intersections.begin(), intersections.end(), [id = intersection.getNode().id](const Intersection& intersection) {

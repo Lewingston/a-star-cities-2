@@ -55,6 +55,8 @@ int main(int argc, const char** args) {
     networkFinder.findNetworks();
     networkFinder.removeUnconnectedNetworks();
 
+    map->addIntersectionsToEndPoints();
+
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
 

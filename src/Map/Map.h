@@ -71,6 +71,8 @@ namespace asc2 {
             void addRoad(RoadType type, const Way& way);
             void addRoadAndWay(const Road::NewRoadData& data);
 
+            void addIntersectionsToEndOfRoad(Road& road);
+
             void removeIntersection(Intersection& intersection);
             void removeRoadAndWay(Road& road);
 

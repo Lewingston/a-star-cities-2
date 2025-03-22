@@ -35,6 +35,7 @@ namespace asc2 {
             [[nodiscard]] float getLength() const;
 
             void addIntersection(Intersection& intersection);
+            void addIntersectionToFront(Intersection& intersection);
 
             void removeIntersection(const Intersection& intersection);
 
