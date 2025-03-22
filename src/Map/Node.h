@@ -10,5 +10,7 @@ namespace asc2 {
         const uint64_t id;
         const double lon;
         const double lat;
+
+        float distance(const Node& node) const;
     };
 }

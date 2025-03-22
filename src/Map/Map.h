@@ -46,6 +46,7 @@ namespace asc2 {
             void splitRoadsOnIntersections();
             void removeUnnecessaryIntersections();
             void fuseRoads();
+            void addIntersectionsToEndPoints();
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& ids) const;

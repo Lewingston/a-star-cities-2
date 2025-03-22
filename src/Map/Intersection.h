@@ -13,6 +13,12 @@ namespace asc2 {
 
         public:
 
+            struct Connection {
+                const Intersection& intersection;
+                const Road& road;
+                float distance = 0.0f;
+            };
+
             Intersection(const Node& node);
 
             void addRoad(Road& road);
@@ -26,6 +32,8 @@ namespace asc2 {
             [[nodiscard]] const std::vector<std::reference_wrapper<Road>>& getRoads() const noexcept { return roads; }
 
             bool operator== (const Intersection& inter) const { return inter.getNode().id == node.id; }
+
+            [[nodiscard]] std::vector<Connection> getConnections(bool calculateDistance) const;
 
         private:
 

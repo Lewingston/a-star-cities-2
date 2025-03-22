@@ -6,6 +6,11 @@
 
 using namespace asc2;
 
+float Road::getLength() const {
+
+    return way.getLength();
+}
+
 void Road::addIntersection(Intersection& intersection) {
 
     intersections.emplace_back(intersection);

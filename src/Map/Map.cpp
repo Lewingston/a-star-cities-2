@@ -241,6 +241,13 @@ void Map::fuseRoads() {
     std::cout << "Fused intersections: " << removeIntersections.size() << '\n';
 }
 
+void Map::addIntersectionsToEndPoints() {
+    
+    for (auto& [id, road] : roads) {
+
+    }
+}
+
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     const std::vector<uint64_t>& ids) const {
 

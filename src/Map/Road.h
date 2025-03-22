@@ -32,6 +32,8 @@ namespace asc2 {
 
             [[nodiscard]] const std::vector<std::reference_wrapper<Intersection>>& getIntersections() const noexcept { return intersections; }
 
+            [[nodiscard]] float getLength() const;
+
             void addIntersection(Intersection& intersection);
 
             void removeIntersection(const Intersection& intersection);

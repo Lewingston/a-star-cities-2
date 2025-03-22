@@ -23,6 +23,8 @@ namespace asc2 {
             [[nodiscard]] std::size_t getNodeCount() const noexcept { return nodes.size(); }
             [[nodiscard]] std::size_t getLineCount() const noexcept { return nodes.size() - 1; }
 
+            [[nodiscard]] float getLength() const;
+
         private:
 
             uint64_t id;
