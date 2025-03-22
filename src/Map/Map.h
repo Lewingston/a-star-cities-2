@@ -6,6 +6,7 @@
 #include "Building.h"
 #include "Intersection.h"
 #include "IdHandler.h"
+#include "../MapUtilities/NetworkFinder.h"
 
 #include <map>
 #include <functional>
@@ -48,6 +49,9 @@ namespace asc2 {
             void fuseRoads();
             void addIntersectionsToEndPoints();
 
+            std::size_t removeRoadsWithoutIntersections();
+            void removeNetwork(const NetworkFinder::Network& network);
+
             [[nodiscard]] std::vector<std::reference_wrapper<const Node>> getNodes(
                 const std::vector<uint64_t>& ids) const;
             [[nodiscard]] std::vector<std::reference_wrapper<const Way>> getWays(
@@ -69,7 +73,6 @@ namespace asc2 {
 
             void removeIntersection(Intersection& intersection);
             void removeRoadAndWay(Road& road);
-
 
             std::map<uint64_t, Node> nodes;
             std::map<uint64_t, Way>  ways;

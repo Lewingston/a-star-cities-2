@@ -19,15 +19,21 @@ namespace asc2 {
                 std::map<uint64_t, std::reference_wrapper<const Road>> roads;
             };
 
-            NetworkFinder(const Map& map);
+            NetworkFinder(Map& map);
 
-            std::vector<Network> findNetworks() const;
+            [[nodiscard]] static std::vector<Network> findNetworks(const Map& map);
 
-            Network findNetwork(const Intersection& intersection) const;
+            const std::vector<Network>& findNetworks();
+
+            [[nodiscard]] static Network findNetwork(const Intersection& intersection);
+
+            void removeUnconnectedNetworks();
 
         private:
 
-            const Map& map;
+            Map& map;
+
+            std::vector<Network> networks;
 
     };
 }

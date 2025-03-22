@@ -248,6 +248,37 @@ void Map::addIntersectionsToEndPoints() {
     }
 }
 
+std::size_t Map::removeRoadsWithoutIntersections() {
+
+    std::vector<std::reference_wrapper<Road>> removeRoads;
+
+    for (auto& [id, road] : roads) {
+
+        if (road.getIntersections().size() == 0)
+            removeRoads.emplace_back(road);
+    }
+
+    for (Road& road : removeRoads) {
+        removeRoadAndWay(road);
+    }
+
+    std::cout << "Removed " << removeRoads.size() << " roads without intersection.\n";
+
+    return removeRoads.size();
+}
+
+void Map::removeNetwork(const NetworkFinder::Network& network) {
+
+    for (const auto& [id, road] : network.roads) {
+        roads.erase(id);
+        ways.erase(id);
+    }
+
+    for (const auto& [id, intersection] : network.intersections) {
+        intersections.erase(id);
+    }
+}
+
 std::vector<std::reference_wrapper<const Node>> Map::getNodes(
     const std::vector<uint64_t>& ids) const {
 

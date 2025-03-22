@@ -20,14 +20,14 @@ void MapRenderer::init(const Map& map,
     this->config = config;
 
     //createBufferFromAllWays(map);
-    //createLineBufferFromRoads(map);
+    createLineBufferFromRoads(map);
     //createLineBufferFromBuildings(map);
 
     //createShapeBufferFromBuildings(map);
 
-    //createNodeBufferFromIntersections(map);
+    createNodeBufferFromIntersections(map);
 
-    createBuffersForRoadNetworks(map);
+    //createBuffersForRoadNetworks(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
@@ -60,15 +60,16 @@ void MapRenderer::createBufferFromAllWays(const Map& map) {
 
 void MapRenderer::createLineBufferFromRoads(const Map& map) {
 
-    std::vector<std::reference_wrapper<const Way>> roadWays;
-    roadWays.reserve(map.getAllRoads().size());
+    std::vector<LineRenderer> lines;
+    lines.reserve(map.getAllRoads().size());
 
-    //for (const Road& road : map.getAllRoads()) {
+    const sf::Color color = Color::getRandomColor();
+
     for (const auto& [id, road] : map.getAllRoads()) {
-        roadWays.push_back(road.getWay());
+        lines.emplace_back(road.getWay(), color);
     }
 
-    auto buffer = std::make_unique<LineBuffer>(roadWays, config);
+    auto buffer = std::make_unique<LineBuffer>(lines, config);
     renderBuffers.push_back(std::move(buffer));
 }
 
@@ -121,12 +122,11 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
     std::vector<NodeRenderer> nodes;
     nodes.reserve(map.getAllIntersections().size());
 
+    const sf::Color color = Color::getRandomColor();
+
     for (const auto& [id, intersection] : map.getAllIntersections()) {
 
-        /*if (intersection.getRoads().size() < 2)
-            continue;*/
-
-        nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat, Color::getRandomColor());
+        nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat, color);
     }
 
     auto buffer = std::make_unique<ShapeBuffer>(nodes);
@@ -135,8 +135,7 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
 
 void MapRenderer::createBuffersForRoadNetworks(const Map& map) {
 
-    NetworkFinder networkFinder(map);
-    const auto networks = networkFinder.findNetworks();
+    const auto networks = NetworkFinder::findNetworks(map);
 
     std::vector<NodeRenderer> nodes;
     nodes.reserve(map.getAllIntersections().size());

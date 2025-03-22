@@ -1,17 +1,19 @@
 
 #include "NetworkFinder.h"
 #include "../Map/Map.h"
+#include "../Map/Road.h"
 
 #include <map>
 #include <stack>
 #include <iostream>
+#include <algorithm>
 
 using namespace asc2;
 
-NetworkFinder::NetworkFinder(const Map& map) :
+NetworkFinder::NetworkFinder(Map& map) :
     map(map) {}
 
-std::vector<NetworkFinder::Network> NetworkFinder::findNetworks() const {
+std::vector<NetworkFinder::Network> NetworkFinder::findNetworks(const Map& map) {
 
     std::vector<Network> networks;
 
@@ -35,7 +37,13 @@ std::vector<NetworkFinder::Network> NetworkFinder::findNetworks() const {
     return networks;
 }
 
-NetworkFinder::Network NetworkFinder::findNetwork(const Intersection& intersection) const {
+const std::vector<NetworkFinder::Network>& NetworkFinder::findNetworks() {
+
+    networks = findNetworks(map);
+    return networks;
+}
+
+NetworkFinder::Network NetworkFinder::findNetwork(const Intersection& intersection) {
 
     Network network;
 
@@ -58,4 +66,30 @@ NetworkFinder::Network NetworkFinder::findNetwork(const Intersection& intersecti
     }
 
     return network;
+}
+
+void NetworkFinder::removeUnconnectedNetworks() {
+
+    std::size_t removedRoadCount = map.removeRoadsWithoutIntersections();
+
+    // find largest network
+    auto largest = std::max_element(networks.begin(), networks.end(),
+        [](const Network& n1, const Network& n2) {
+            return n1.roads.size() < n2.roads.size();
+        });
+
+    for (auto network = networks.begin(); network != networks.end(); network++) {
+
+        if (network == largest)
+            continue;
+
+        map.removeNetwork(*network);
+
+        removedRoadCount += network->roads.size();
+    }
+
+    const std::size_t totalRoadCount = removedRoadCount + largest->roads.size();
+    const float percentage = static_cast<float>(removedRoadCount) / static_cast<float>(totalRoadCount) * 100.0f;
+
+    std::cout << "Removed " << removedRoadCount << " of " << totalRoadCount << " roads (" << percentage << "%)\n";
 }

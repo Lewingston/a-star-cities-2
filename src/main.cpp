@@ -33,7 +33,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/roads_only/berlin.json";
+        std::string filePath = "../../maps/roads_only/speyer.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -51,8 +51,9 @@ int main(int argc, const char** args) {
 
     map->optimizeIntersecions();
 
-    /*NetworkFinder networkFinder(*map);
-    networkFinder.findNetworks();*/
+    NetworkFinder networkFinder(*map);
+    networkFinder.findNetworks();
+    networkFinder.removeUnconnectedNetworks();
 
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
