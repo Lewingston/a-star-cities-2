@@ -77,6 +77,8 @@ set(SOURCE_FILES
     src/MapRenderer/ShapeRenderer.cpp
     src/MapRenderer/ShapeBuffer.cpp
     src/MapRenderer/NodeRenderer.cpp
+    src/MapRenderer/LineRenderer.cpp
+    src/MapUtilities/NetworkFinder.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})

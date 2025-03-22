@@ -53,11 +53,9 @@ ShapeBuffer::ShapeBuffer(const std::vector<NodeRenderer>& nodes) :
     initVertexBuffer(vertexCount);
 
     for (const NodeRenderer& node : nodes) {
-        
-        const sf::Color color = Color::getRandomColor();
 
         for (const auto& [x, y] : node.getVertices()) {
-            vertexArray.emplace_back(sf::Vector2f{x, -y}, color);
+            vertexArray.emplace_back(sf::Vector2f{x, -y}, node.getColor());
         }
     }
 

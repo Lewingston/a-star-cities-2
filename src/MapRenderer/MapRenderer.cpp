@@ -2,9 +2,12 @@
 #include "MapRenderer.h"
 #include "ShapeRenderer.h"
 #include "NodeRenderer.h"
+#include "LineRenderer.h"
 #include "LineBuffer.h"
 #include "ShapeBuffer.h"
+#include "Color.h"
 #include "../Map/Map.h"
+#include "../MapUtilities/NetworkFinder.h"
 
 #include <iostream>
 #include <numeric>
@@ -17,12 +20,14 @@ void MapRenderer::init(const Map& map,
     this->config = config;
 
     //createBufferFromAllWays(map);
-    createLineBufferFromRoads(map);
+    //createLineBufferFromRoads(map);
     //createLineBufferFromBuildings(map);
 
     //createShapeBufferFromBuildings(map);
 
-    createNodeBufferFromIntersections(map);
+    //createNodeBufferFromIntersections(map);
+
+    createBuffersForRoadNetworks(map);
 
     std::size_t vertexCount = 0;
     std::size_t edgeCount = 0;
@@ -121,9 +126,41 @@ void MapRenderer::createNodeBufferFromIntersections(const Map& map) {
         /*if (intersection.getRoads().size() < 2)
             continue;*/
 
-        nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat);
+        nodes.emplace_back(intersection.getNode().lon, intersection.getNode().lat, Color::getRandomColor());
     }
 
     auto buffer = std::make_unique<ShapeBuffer>(nodes);
     renderBuffers.push_back(std::move(buffer));
+}
+
+void MapRenderer::createBuffersForRoadNetworks(const Map& map) {
+
+    NetworkFinder networkFinder(map);
+    const auto networks = networkFinder.findNetworks();
+
+    std::vector<NodeRenderer> nodes;
+    nodes.reserve(map.getAllIntersections().size());
+
+    std::vector<LineRenderer> lines;
+    lines.reserve(map.getAllRoads().size());
+
+    for (const auto& network : networks) {
+
+        const sf::Color nodeColor = Color::getRandomColor();
+        const sf::Color roadColor = Color::getRandomColor();
+
+        for (const auto& [id, intersection] : network.intersections) {
+            nodes.emplace_back(intersection.get().getNode().lon, intersection.get().getNode().lat, nodeColor);
+        }
+
+        for (const auto& [id, road] : network.roads) {
+            lines.emplace_back(road.get().getWay(), roadColor);
+        }
+    }
+
+    auto lineBuffer = std::make_unique<LineBuffer>(lines, config);
+    renderBuffers.push_back(std::move(lineBuffer));
+
+    auto nodeBuffer = std::make_unique<ShapeBuffer>(nodes);
+    renderBuffers.push_back(std::move(nodeBuffer));
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
+
 #include <cstdint>
 #include <vector>
 
@@ -9,7 +11,7 @@ namespace asc2 {
 
         public:
 
-            NodeRenderer(float posX, float posY);
+            NodeRenderer(float posX, float posY, sf::Color color);
 
             static void setGeometry(float size, uint8_t vertexCount);
 
@@ -19,10 +21,14 @@ namespace asc2 {
 
             [[nodiscard]] std::pair<float, float> getPosition() const noexcept { return { posX, posY }; }
 
+            [[nodiscard]] sf::Color getColor() const noexcept { return color; }
+
         private:
 
             float posX;
             float posY;
+
+            sf::Color color;
 
             static float size;
             static uint8_t vertexCount;

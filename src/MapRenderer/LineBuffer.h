@@ -13,6 +13,7 @@
 namespace asc2 {
 
     class Way;
+    class LineRenderer;
 
     class LineBuffer : public RenderBufferInterface {
 
@@ -21,6 +22,8 @@ namespace asc2 {
             LineBuffer(const std::vector<std::reference_wrapper<const Way>>& ways, const RenderConfig& config);
 
             LineBuffer(const std::map<uint64_t, Way>& ways, const RenderConfig& config);
+
+            LineBuffer(const std::vector<LineRenderer>& lines, const RenderConfig& config);
 
             void draw(sf::RenderTarget& target) override;
 
@@ -49,7 +52,8 @@ namespace asc2 {
             [[nodiscard]] bool wayIsSuitableForRendering(const Way& way) const;
 
             void addWayToVertexArray(const Way& way,
-                                     std::vector<sf::Vertex>& vertexArray) const;
+                                     std::vector<sf::Vertex>& vertexArray,
+                                     sf::Color color) const;
 
             void updateVertexBuffer();
 

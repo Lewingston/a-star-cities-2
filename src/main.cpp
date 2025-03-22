@@ -3,6 +3,7 @@
 #include "MapParser/MapParser.h"
 #include "Map/Map.h"
 #include "MapRenderer/Window.h"
+#include "MapUtilities/NetworkFinder.h"
 
 #include <iostream>
 
@@ -32,7 +33,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/roads_only/new_york.json";
+        std::string filePath = "../../maps/roads_only/berlin.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -49,6 +50,9 @@ int main(int argc, const char** args) {
     }
 
     map->optimizeIntersecions();
+
+    /*NetworkFinder networkFinder(*map);
+    networkFinder.findNetworks();*/
 
     std::cout << "Road count: " << map->getAllRoads().size() << '\n';
     std::cout << "Building count: " << map->getAllBuildings().size() << '\n';

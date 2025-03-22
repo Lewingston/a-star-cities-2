@@ -1,5 +1,6 @@
 
 #include "LineBuffer.h"
+#include "LineRenderer.h"
 #include "Color.h"
 #include "../Map/Node.h"
 #include "../Map/Way.h"
@@ -28,7 +29,7 @@ LineBuffer::LineBuffer(const std::vector<std::reference_wrapper<const Way>>& way
         if (!wayIsSuitableForRendering(way))
             continue;
 
-        addWayToVertexArray(way, vertexArray);
+        addWayToVertexArray(way, vertexArray, Color::getRandomColor());
     }
 
     updateVertexBuffer();
@@ -49,7 +50,25 @@ LineBuffer::LineBuffer(const std::map<uint64_t, Way>& ways, const RenderConfig& 
         if (!wayIsSuitableForRendering(way))
             continue;
 
-        addWayToVertexArray(way, vertexArray);
+        addWayToVertexArray(way, vertexArray, sf::Color::Black);
+    }
+
+    updateVertexBuffer();
+}
+
+LineBuffer::LineBuffer(const std::vector<LineRenderer>& lines, const RenderConfig& config) :
+    config(config) {
+
+    const std::size_t lineCount = std::accumulate(lines.begin(), lines.end(), 0u,
+        [](std::size_t sum, const LineRenderer& line) {
+            return sum + line.getWay().getLineCount();
+        });
+
+    initVertexBuffer(lineCount * 2);
+
+    for (const LineRenderer& line : lines) {
+
+        addWayToVertexArray(line.getWay(), vertexArray, line.getColor());
     }
 
     updateVertexBuffer();
@@ -92,9 +111,8 @@ bool LineBuffer::wayIsSuitableForRendering(const Way& way) const {
 }
 
 void LineBuffer::addWayToVertexArray(const Way& way,
-                                     std::vector<sf::Vertex>& vertexArray) const {
-
-    const sf::Color color = Color::getRandomColor();
+                                     std::vector<sf::Vertex>& vertexArray,
+                                     sf::Color color) const {
 
     for (auto iter = way.getNodes().begin(); iter != way.getNodes().end(); iter++) {
 

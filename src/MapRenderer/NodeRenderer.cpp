@@ -11,9 +11,10 @@ uint8_t NodeRenderer::vertexCount = 12;
 
 std::vector<std::pair<float, float>> NodeRenderer::vertices = createVertices(size, vertexCount);
 
-NodeRenderer::NodeRenderer(float posX, float posY) :
+NodeRenderer::NodeRenderer(float posX, float posY, sf::Color color) :
     posX(posX),
-    posY(posY) {}
+    posY(posY),
+    color(color) {}
 
 void NodeRenderer::setGeometry(float size, uint8_t vertexCount) {
 
