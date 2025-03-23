@@ -45,7 +45,6 @@ namespace asc2 {
 
             sf::Vector2i mousePosition;
 
-            //sf::Vector2f mapCenter;
             Map::Dimensions mapDimensions;
 
             std::array<sf::Vertex, 5> mapBorder;

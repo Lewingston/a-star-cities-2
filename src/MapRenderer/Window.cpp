@@ -17,7 +17,9 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) :
 
 void Window::show() {
 
-    ImGui::SFML::Init(window);
+    if (!ImGui::SFML::Init(window)) {
+        throw std::runtime_error("Failed to initialize ImGui.");
+    }
 
     sf::Clock deltaClock;
 
@@ -25,7 +27,6 @@ void Window::show() {
 
         while (const std::optional event = window.pollEvent()) {
 
-            
             if (event.has_value()) {
                 ImGui::SFML::ProcessEvent(window, event.value());
                 onEvent(event.value());
@@ -166,7 +167,7 @@ void Window::resetView() {
     }
 
     auto view = window.getView();
-    view.setSize(sf::Vector2f(windowWidth, windowHeight)); // reset size, to reset zoom level
+    view.setSize(sf::Vector2f(static_cast<float>(windowWidth), static_cast<float>(windowHeight))); // reset size, to reset zoom level
     view.setCenter(sf::Vector2f(x, y));
     view.zoom(zoom);
     window.setView(view);
@@ -183,9 +184,6 @@ void Window::renderMap(const Map& map,
 
     const double mapWidth  = map.getDimensions().maxLon - map.getDimensions().minLon;
     const double mapHeight = map.getDimensions().maxLat - map.getDimensions().minLat;
-
-    const double windowWidth  = static_cast<double>(window.getSize().x);
-    const double windowHeight = static_cast<double>(window.getSize().y);
 
     zoom = 180.0f / 40'000'000.0f;
 
