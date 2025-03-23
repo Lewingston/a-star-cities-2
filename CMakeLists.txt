@@ -96,6 +96,15 @@ include_directories(SYSTEM libs/json/single_include)
 # earcut shape generator
 include_directories(SYSTEM libs/earcut/include)
 
+# ImGui-SFML
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/libs/ImGui)
+set(IMGUI_SFML_FIND_SFML OFF)
+set(IMGUI_SFML_IMGUI_DEMO ON)
+add_subdirectory(libs/ImGui_SFML SYSTEM)
+target_link_libraries(${Name} ImGui-SFML)
+include_directories(SYSTEM libs/ImGui)
+include_directories(SYSTEM libs/ImGui_SFML)
+
 # Custom target to run the application
 add_custom_target(test
     COMMAND $<TARGET_FILE:${Name}>

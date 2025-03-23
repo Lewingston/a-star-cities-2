@@ -2,6 +2,9 @@
 #include "Window.h"
 #include "../Map/Map.h"
 
+#include <imgui-SFML.h>
+#include <imgui.h>
+
 #include <iostream>
 
 using namespace asc2;
@@ -14,15 +17,30 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) :
 
 void Window::show() {
 
+    ImGui::SFML::Init(window);
+
+    sf::Clock deltaClock;
+
     while (window.isOpen()) {
 
         while (const std::optional event = window.pollEvent()) {
 
-            if (event.has_value())
+            
+            if (event.has_value()) {
+                ImGui::SFML::ProcessEvent(window, event.value());
                 onEvent(event.value());
+            }
         }
 
+        ImGui::SFML::Update(window, deltaClock.restart());
+
+        ImGui::ShowDemoWindow();
+
         draw();
+
+        ImGui::SFML::Render(window);
+
+        window.display();
     }
 }
 
@@ -61,8 +79,6 @@ void Window::draw() {
     drawCenter();
 
     window.draw(mapBorder.data(), mapBorder.size(), sf::PrimitiveType::LineStrip);
-
-    window.display();
 }
 
 void Window::drawCenter() {

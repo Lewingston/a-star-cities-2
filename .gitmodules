@@ -7,3 +7,9 @@
 [submodule "libs/earcut"]
 	path = libs/earcut
 	url = https://github.com/mapbox/earcut.hpp.git
+[submodule "libs/ImGui"]
+	path = libs/ImGui
+	url = https://github.com/ocornut/imgui.git
+[submodule "libs/ImGui_SFML"]
+	path = libs/ImGui_SFML
+	url = https://github.com/SFML/imgui-sfml.git
