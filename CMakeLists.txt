@@ -79,6 +79,8 @@ set(SOURCE_FILES
     src/MapRenderer/NodeRenderer.cpp
     src/MapRenderer/LineRenderer.cpp
     src/MapUtilities/NetworkFinder.cpp
+    src/AStar/AStarWindow.cpp
+    src/AStar/LoadingWindow.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})
@@ -104,6 +106,11 @@ add_subdirectory(libs/ImGui_SFML SYSTEM)
 target_link_libraries(${Name} ImGui-SFML)
 include_directories(SYSTEM libs/ImGui)
 include_directories(SYSTEM libs/ImGui_SFML)
+
+# resources
+add_subdirectory(resources)
+add_dependencies(${Name} generateFonts)
+target_link_libraries(${Name} ${CMAKE_BINARY_DIR}/resources/fontData.o)
 
 # Custom target to run the application
 add_custom_target(test

@@ -21,6 +21,8 @@ void Window::show() {
         throw std::runtime_error("Failed to initialize ImGui.");
     }
 
+    //ImGui::SFML::Init(window);
+
     sf::Clock deltaClock;
 
     while (window.isOpen()) {
@@ -29,7 +31,9 @@ void Window::show() {
 
             if (event.has_value()) {
                 ImGui::SFML::ProcessEvent(window, event.value());
-                onEvent(event.value());
+
+                if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+                    onEvent(event.value());
             }
         }
 
@@ -43,6 +47,8 @@ void Window::show() {
 
         window.display();
     }
+
+    ImGui::SFML::Shutdown();
 }
 
 void Window::onEvent(const sf::Event& event) {

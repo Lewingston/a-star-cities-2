@@ -19,9 +19,15 @@ namespace asc2 {
 
             Window(uint32_t width, uint32_t height, const std::string& title);
 
-            void show();
+            virtual ~Window() = default;
+
+            virtual void show();
             void renderMap(const Map& map,
                            const RenderConfig& config);
+
+        protected:
+
+            sf::RenderWindow& getWindow() { return window; }
 
         private:
 

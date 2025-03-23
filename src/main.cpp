@@ -1,9 +1,14 @@
 
-#include "AStarCities.h"
+/*#include "AStarCities.h"
 #include "MapParser/MapParser.h"
 #include "Map/Map.h"
 #include "MapRenderer/Window.h"
-#include "MapUtilities/NetworkFinder.h"
+#include "MapUtilities/NetworkFinder.h"*/
+
+//#include <iostream>
+
+#include "AStarCities.h"
+#include "AStar/AStarWindow.h"
 
 #include <iostream>
 
@@ -11,7 +16,7 @@ using namespace asc2;
 
 int main(int argc, const char** args) {
 
-    std::unique_ptr<Map> map;
+    /*std::unique_ptr<Map> map;
 
     const bool enableIncomplete = false;
 
@@ -50,7 +55,7 @@ int main(int argc, const char** args) {
 
     try {
 
-        std::string filePath = "../../maps/roads_only/berlin.json";
+        std::string filePath = "../../maps/roads_only/speyer.json";
         if (argc == 2)
             filePath = std::string(args[1]);
 
@@ -86,7 +91,20 @@ int main(int argc, const char** args) {
 
     Window window(1600, 900, ProgramInfo::name);
     window.renderMap(*map, renderConfig);
-    window.show();
+    window.show();*/
+
+    const std::string filePath = argc == 2 ?
+        std::string(args[1]) :
+        "../../maps/roads_only/speyer.json";
+
+    try {
+        AStarWindow window(1600, 900, ProgramInfo::name);
+        window.setMapFile(filePath);
+        window.show();
+    } catch (std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
 
     return 0;
 }

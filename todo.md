@@ -12,3 +12,5 @@
     * Handling of incomplete elements
 
  * Use tracy for performance profiling
+
+ * Handle error when file could not be opened.
