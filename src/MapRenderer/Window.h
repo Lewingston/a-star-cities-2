@@ -10,6 +10,7 @@
 namespace asc2 {
 
     class Map;
+    class MapLoader;
 
     struct RenderConfig;
 
@@ -21,7 +22,10 @@ namespace asc2 {
 
             virtual ~Window() = default;
 
-            virtual void show();
+            void show();
+
+            void show(MapLoader& mapLoader, const RenderConfig& config);
+
             void renderMap(const Map& map,
                            const RenderConfig& config);
 

@@ -19,13 +19,21 @@ void MapRenderer::init(const Map& map,
 
     this->config = config;
 
-    //createBufferFromAllWays(map);
-    createLineBufferFromRoads(map);
-    //createLineBufferFromBuildings(map);
+    if (config.renderAllLines)
+        createBufferFromAllWays(map);
 
-    //createShapeBufferFromBuildings(map);
+    if (config.renderRoads)
+        createLineBufferFromRoads(map);
 
-    //createNodeBufferFromIntersections(map);
+    if (config.renderBuildings) {
+        if (config.buildingLineMode)
+            createLineBufferFromBuildings(map);
+        else
+            createShapeBufferFromBuildings(map);
+    }
+
+    if (config.renderIntersections)
+        createNodeBufferFromIntersections(map);
 
     //createBuffersForRoadNetworks(map);
 
@@ -66,6 +74,10 @@ void MapRenderer::createLineBufferFromRoads(const Map& map) {
     for (const auto& [id, road] : map.getAllRoads()) {
 
         const sf::Color color = [&]() -> sf::Color {
+
+            if (config.randomColors)
+                return Color::getRandomColor();
+
             auto find = config.roadColors.find(road.getType());
             if (find != config.roadColors.end())
                 return find->second;

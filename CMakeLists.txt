@@ -80,7 +80,8 @@ set(SOURCE_FILES
     src/MapRenderer/LineRenderer.cpp
     src/MapUtilities/NetworkFinder.cpp
     src/AStar/AStarWindow.cpp
-    src/AStar/LoadingWindow.cpp
+    src/MapLoader/LoadingWindow.cpp
+    src/MapLoader/MapLoader.cpp
 )
 
 add_executable(${Name} ${SOURCE_FILES})

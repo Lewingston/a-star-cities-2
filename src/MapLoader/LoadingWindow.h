@@ -7,6 +7,8 @@
 
 namespace asc2 {
 
+    class MapParser;
+
     class LoadingWindow {
 
         public:

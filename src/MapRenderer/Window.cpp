@@ -1,6 +1,8 @@
 
 #include "Window.h"
 #include "../Map/Map.h"
+#include "../MapLoader/MapLoader.h"
+#include "../MapLoader/LoadingWindow.h"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -15,13 +17,29 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) :
     window.setFramerateLimit(60u);
 }
 
+void Window::show(MapLoader& mapLoader, const RenderConfig& config) {
+
+    LoadingWindow loadingWindow(getWindow());
+
+    std::shared_ptr<Map> map = std::make_shared<Map>();
+
+    mapLoader.startLoader({&loadingWindow, map});
+
+    loadingWindow.show();
+
+    mapLoader.join();
+
+    if (map != nullptr) {
+        renderMap(*map, config);
+        show();
+    }
+}
+
 void Window::show() {
 
-    if (!ImGui::SFML::Init(window)) {
+    /*if (!ImGui::SFML::Init(window)) {
         throw std::runtime_error("Failed to initialize ImGui.");
-    }
-
-    //ImGui::SFML::Init(window);
+    }*/
 
     sf::Clock deltaClock;
 
@@ -30,25 +48,25 @@ void Window::show() {
         while (const std::optional event = window.pollEvent()) {
 
             if (event.has_value()) {
-                ImGui::SFML::ProcessEvent(window, event.value());
+                //ImGui::SFML::ProcessEvent(window, event.value());
 
-                if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+                //if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
                     onEvent(event.value());
             }
         }
 
-        ImGui::SFML::Update(window, deltaClock.restart());
+        //ImGui::SFML::Update(window, deltaClock.restart());
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
         draw();
 
-        ImGui::SFML::Render(window);
+        //ImGui::SFML::Render(window);
 
         window.display();
     }
 
-    ImGui::SFML::Shutdown();
+    //ImGui::SFML::Shutdown();
 }
 
 void Window::onEvent(const sf::Event& event) {

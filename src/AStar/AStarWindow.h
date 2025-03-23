@@ -12,7 +12,7 @@ namespace asc2 {
 
             AStarWindow(uint32_t width, uint32_t height, const std::string& title);
 
-            void show() override;
+            //void show() override;
 
             void setMapFile(const std::string& fileName) { mapFileName = fileName; }
 

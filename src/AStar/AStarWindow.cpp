@@ -1,6 +1,6 @@
 
 #include "AStarWindow.h"
-#include "LoadingWindow.h"
+#include "../MapLoader/LoadingWindow.h"
 #include "../MapParser/MapParser.h"
 
 #include <iostream>
@@ -13,12 +13,12 @@ AStarWindow::AStarWindow(uint32_t width, uint32_t height, const std::string& tit
 
 }
 
-void AStarWindow::show() {
+/*void AStarWindow::show() {
 
     loadMap(mapFileName);
 
     Window::show();
-}
+}*/
 
 void AStarWindow::loadMap(const std::string& filePath) {
 
@@ -85,7 +85,7 @@ void AStarWindow::loadThread(const std::string& filePath, LoadingWindow& window,
 
     // parse file
     window.addStatusMessage("Parsing map...");
-    map = parser.parse();
+    //map = parser.parse();
     if (map == nullptr) {
         window.addStatusMessage("Failed to parse map!");
         std::cerr << "Failed to parse map: " << filePath << '\n';

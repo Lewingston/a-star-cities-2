@@ -24,7 +24,9 @@ namespace asc2 {
 
             MapParser(const std::string& filePath, const MapParserConfig& config);
 
-            std::unique_ptr<Map> parse();
+            std::shared_ptr<Map> parse();
+
+            bool parse(std::shared_ptr<Map> map);
 
         private:
 
@@ -49,6 +51,6 @@ namespace asc2 {
             WayParser      wayParser;
             RelationParser relationParser;
 
-            std::unique_ptr<Map> map;
+            std::shared_ptr<Map> map;
     };
 }

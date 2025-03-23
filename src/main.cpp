@@ -8,67 +8,121 @@
 //#include <iostream>
 
 #include "AStarCities.h"
+#include "MapParser/MapParserConfig.h"
+#include "MapParser/MapParser.h"
+#include "MapLoader/MapLoader.h"
 #include "AStar/AStarWindow.h"
 
 #include <iostream>
 
 using namespace asc2;
 
+const bool enableIncomplete = false;
+
+const MapParserConfig defaultParserConfig {
+    .mapFeatures = {
+        MapFeatureType::NO_TYPE,
+        MapFeatureType::UNKNOWN,
+        //MapFeatureType::BUILDING,
+        //MapFeatureType::HIGHWAY
+    },
+    .includeIncompleteWays = enableIncomplete
+};
+
+const MapParserConfig aStarParserConfig {
+    .mapFeatures = {
+        MapFeatureType::NO_TYPE,
+        MapFeatureType::UNKNOWN,
+        MapFeatureType::HIGHWAY
+    }
+};
+
+const RenderConfig defaultRenderConfig {
+    .displayIncomplete = enableIncomplete,
+    .renderAllLines    = true,
+    //.renderRoads       = true,
+    //.renderBuildings   = true,
+};
+
+const RenderConfig aStarRenderConfig {
+    .displayIncomplete   = enableIncomplete,
+    .buildingLineMode    = false,
+    .randomColors        = false,
+    .renderAllLines      = false,
+    .renderRoads         = true,
+    .renderIntersections = false,
+    .backgroundColor     = sf::Color::Black,
+    .roadColor           = sf::Color::Black,
+    .roadColors          = {
+        { RoadType::LIVING_STREET,  sf::Color(16, 16, 16) },
+        { RoadType::RESIDENTIAL,    sf::Color(18, 18, 18) },
+        { RoadType::UNCLASSIFIED,   sf::Color(20, 20, 20) },
+        { RoadType::TERTIARY,       sf::Color(22, 22, 22) },
+        { RoadType::TERTIARY_LINK,  sf::Color(22, 22, 22) },
+        { RoadType::SECONDARY,      sf::Color(24, 24, 24) },
+        { RoadType::SECONDARY_LINK, sf::Color(24, 24, 24) },
+        { RoadType::PRIMARY,        sf::Color(26, 26, 26) },
+        { RoadType::PRIMARY_LINK,   sf::Color(26, 26, 26) },
+        { RoadType::TRUNK,          sf::Color(28, 28, 28) },
+        { RoadType::TRUNK_LINK,     sf::Color(28, 28, 28) },
+        { RoadType::MOTORWAY,       sf::Color(30, 30, 30) },
+        { RoadType::MOTORWAY_LINK,  sf::Color(30, 30, 30) }
+    }
+};
+
+std::shared_ptr<Map> loadMapWithoutWindow(const std::string& filePath);
+void loadMapWithWindow(const std::string& filePath, Window& window);
+std::shared_ptr<Map> loadMapWithoutWindowPrepareForAStar(const std::string& filePath);
+void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window);
+
 int main(int argc, const char** args) {
 
-    /*std::unique_ptr<Map> map;
+    const std::string filePath = argc == 2 ?
+        std::string(args[1]) :
+        //"../../maps/test/speyer.json";
+        "../../maps/roads_only/berlin.json";
 
-    const bool enableIncomplete = false;
+    /*
+    //auto map = loadMapWithoutWindow(filePath);
+    auto map = loadMapWithoutWindowPrepareForAStar(filePath);
+    Window window(1600, 900, ProgramInfo::name);
+    window.renderMap(*map, aStarRenderConfig);
+    window.show();
+    */
 
-    MapParserConfig parserConfig {
-        .mapFeatures = {
-            //MapFeatureType::NO_TYPE,
-            //MapFeatureType::UNKNOWN,
-            //MapFeatureType::BUILDING,
-            MapFeatureType::HIGHWAY,
-            //MapFeatureType::RAILWAY,
-        },
-        .includeIncompleteWays = enableIncomplete
-    };
+    Window window(1600, 900, ProgramInfo::name);
+    loadMapWithWindowPrepareForAStar(filePath, window);
 
-    RenderConfig renderConfig {
-        .displayIncomplete = enableIncomplete,
-        .buildingLineMode  = false,
-        .backgroundColor   = sf::Color::Black,
-        .roadColor         = sf::Color(80, 0, 0),
-        .roadColors        = {
-            { RoadType::LIVING_STREET,  sf::Color(16, 16, 16) },
-            { RoadType::RESIDENTIAL,    sf::Color(18, 18, 18) },
-            { RoadType::UNCLASSIFIED,   sf::Color(20, 20, 20) },
-            { RoadType::TERTIARY,       sf::Color(22, 22, 22) },
-            { RoadType::TERTIARY_LINK,  sf::Color(22, 22, 22) },
-            { RoadType::SECONDARY,      sf::Color(24, 24, 24) },
-            { RoadType::SECONDARY_LINK, sf::Color(24, 24, 24) },
-            { RoadType::PRIMARY,        sf::Color(26, 26, 26) },
-            { RoadType::PRIMARY_LINK,   sf::Color(26, 26, 26) },
-            { RoadType::TRUNK,          sf::Color(28, 28, 28) },
-            { RoadType::TRUNK_LINK,     sf::Color(28, 28, 28) },
-            { RoadType::MOTORWAY,       sf::Color(30, 30, 30) },
-            { RoadType::MOTORWAY_LINK,  sf::Color(30, 30, 30) }
-        }
-    };
+    return 0;
+}
 
-    try {
+std::shared_ptr<Map> loadMapWithoutWindow(const std::string& filePath) {
 
-        std::string filePath = "../../maps/roads_only/speyer.json";
-        if (argc == 2)
-            filePath = std::string(args[1]);
+    MapParser parser(filePath, defaultParserConfig);
 
-        MapParser parser(filePath, parserConfig);
+    std::shared_ptr<Map> map = parser.parse();
+    if (map == nullptr) {
+        std::cerr << "Failed to parse map: " << filePath << '\n';
+    }
 
-        map = parser.parse();
-        if (map == nullptr) {
-            std::cerr << "Failed to parse map: " << filePath << '\n';
-        }
+    return map;
+}
 
-    } catch (std::exception& e) {
-        std::cerr << e.what() << '\n';
-        return 1;
+void loadMapWithWindow(const std::string& filePath, Window& window) {
+
+    MapLoader mapLoader(filePath, defaultParserConfig);
+    mapLoader.setDefualtLoad();
+
+    window.show(mapLoader, defaultRenderConfig);
+}
+
+std::shared_ptr<Map> loadMapWithoutWindowPrepareForAStar(const std::string& filePath) {
+
+    MapParser parser(filePath, aStarParserConfig);
+
+    std::shared_ptr<Map> map = parser.parse();
+    if (map == nullptr) {
+        std::cerr << "Failed to parse map: " << filePath << '\n';
     }
 
     map->optimizeIntersecions();
@@ -81,30 +135,13 @@ int main(int argc, const char** args) {
 
     map->segmentRoads(50.0f);
 
-    const float totalRoadLength = map->getTotalRoadLength();
-    const float averageRoadLength = totalRoadLength / static_cast<float>(map->getAllRoads().size());
-    std::cout << "Total road length: " << totalRoadLength << "m\n";
-    std::cout << "Average road length: " << averageRoadLength << "m\n";
+    return map;
+}
 
-    std::cout << "Road count: " << map->getAllRoads().size() << '\n';
-    std::cout << "Building count: " << map->getAllBuildings().size() << '\n';
+void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window) {
 
-    Window window(1600, 900, ProgramInfo::name);
-    window.renderMap(*map, renderConfig);
-    window.show();*/
+    MapLoader mapLoader(filePath, aStarParserConfig);
+    mapLoader.setAStarLoad();
 
-    const std::string filePath = argc == 2 ?
-        std::string(args[1]) :
-        "../../maps/roads_only/speyer.json";
-
-    try {
-        AStarWindow window(1600, 900, ProgramInfo::name);
-        window.setMapFile(filePath);
-        window.show();
-    } catch (std::exception& e) {
-        std::cerr << e.what() << '\n';
-        return 1;
-    }
-
-    return 0;
+    window.show(mapLoader, aStarRenderConfig);
 }

@@ -31,7 +31,19 @@ void MapParser::loadFromFile(const std::string& filePath) {
     std::cout << "Json file: " << filePath << " loaded.\n";
 }
 
-std::unique_ptr<Map> MapParser::parse() {
+std::shared_ptr<Map> MapParser::parse() {
+
+    auto map = std::make_shared<Map>();
+
+    if (parse(map))
+        return map;
+    else
+        return nullptr;
+}
+
+bool MapParser::parse(std::shared_ptr<Map> map) {
+
+    this->map = map;
 
     if (!data.contains("elements"))
         throw std::runtime_error("Data does not contain any elements");
@@ -39,12 +51,10 @@ std::unique_ptr<Map> MapParser::parse() {
     if (!data["elements"].is_array())
         throw std::runtime_error("Data does not contain any elements");
 
-    map = std::make_unique<Map>();
-
     try {
 
         if (!parseElements(data)) {
-            return nullptr;
+            return false;
         }
 
         relationParser.constructRelations(wayParser.getWays());
@@ -58,10 +68,10 @@ std::unique_ptr<Map> MapParser::parse() {
     } catch (const std::exception& e) {
         std::cerr << "Json parser error:\n";
         std::cerr << e.what() << '\n';
-        throw std::runtime_error("Parser error");
+        return false;
     }
 
-    return std::move(map);
+    return true;
 }
 
 bool MapParser::parseElements(const json& data) {
