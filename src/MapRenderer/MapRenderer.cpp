@@ -37,10 +37,6 @@ void MapRenderer::init(const Map& map,
 
     //createBuffersForRoadNetworks(map);
 
-    std::size_t vertexCount = 0;
-    std::size_t edgeCount = 0;
-    std::size_t polygonCount = 0;
-
     for (const auto& buffer : renderBuffers) {
         vertexCount  += buffer->getVertexCount();
         edgeCount    += buffer->getLineCount();

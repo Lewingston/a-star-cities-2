@@ -22,18 +22,14 @@ namespace asc2 {
 
             virtual ~Window() = default;
 
-            void show();
+            virtual void show();
 
-            void show(MapLoader& mapLoader, const RenderConfig& config);
+            virtual void show(MapLoader& mapLoader, const RenderConfig& config);
 
             void renderMap(const Map& map,
                            const RenderConfig& config);
 
         protected:
-
-            sf::RenderWindow& getWindow() { return window; }
-
-        private:
 
             sf::RenderWindow window;
 
@@ -45,11 +41,16 @@ namespace asc2 {
             void onResize(uint32_t newWidth, uint32_t newHeight);
             void onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent);
             void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent);
+            void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton);
+            void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton);
 
-            void resetView();
+            virtual void resetView();
 
             void draw();
             void drawCenter();
+
+            virtual void drawImGui();
+            virtual void drawInfoOverlay();
 
             void createMapBorder(float posX, float posY, float width, float height);
 
@@ -59,7 +60,13 @@ namespace asc2 {
 
             std::array<sf::Vertex, 5> mapBorder;
 
+            bool leftMouseButtonPressed = false;
+            bool rightMouseButtonPressed = false;
+
             float zoom = 1.0f;
+
+            bool showMapBorder = true;
+            bool showMapCenter = true;
 
     };
 }

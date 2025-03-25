@@ -12,17 +12,24 @@ namespace asc2 {
 
             AStarWindow(uint32_t width, uint32_t height, const std::string& title);
 
-            //void show() override;
-
-            void setMapFile(const std::string& fileName) { mapFileName = fileName; }
+            void show() override { Window::show(); }
+            void show(MapLoader& mpaLoader, const RenderConfig& config) override;
 
         private:
 
-            std::string mapFileName;
+            void drawImGui() override;
 
-            void loadMap(const std::string& filePath);
+            void setRotation(float angel);
 
-            void loadThread(const std::string& filePath, LoadingWindow& window, std::unique_ptr<Map>& map);
+            void resetView() override;
+
+            void displayUi();
+            void infoOverlay();
+
+            std::shared_ptr<Map> map;
+
+            float mapRotation = 0.0f;
+            float rotationInput = 0.0f;
 
     };
 }

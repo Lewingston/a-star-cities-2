@@ -36,6 +36,10 @@ void MapLoader::loadingThreadFunction(const LoaderParams& params) {
         params.window->setProgress(++currentStep, totalSteps);
     }
 
+    mapParser.reset();
+    networkFinder.reset();
+    loadingSteps.clear();
+
     params.window->finishedLoading();
 }
 
@@ -187,7 +191,7 @@ void MapLoader::setAStarLoad() {
         params.window->addStatusMessage("Segmenting roads...");
 
         params.map->segmentRoads(50.0f);
-        
+
         params.window->removeLastStatusMessage();
         params.window->addStatusMessage("Roads are segmented");
 

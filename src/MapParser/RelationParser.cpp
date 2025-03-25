@@ -97,8 +97,8 @@ void RelationParser::constructRelation(Relation& relation, std::map<uint64_t, Wa
 
     if (relation.outerWays.size() == 0)
         std::cerr << "Relation has no outer ways: " << relation.id << '\n';
-    else if (relation.outerWays.size() > 1)
-        std::cerr << "Relation has multiple outer ways: " << relation.id << '\n';
+    /*else if (relation.outerWays.size() > 1)
+        std::cerr << "Relation has multiple outer ways: " << relation.id << '\n';*/
 
     relation.isComplete = complete;
 

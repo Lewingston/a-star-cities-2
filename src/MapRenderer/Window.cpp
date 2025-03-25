@@ -19,7 +19,7 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) :
 
 void Window::show(MapLoader& mapLoader, const RenderConfig& config) {
 
-    LoadingWindow loadingWindow(getWindow());
+    LoadingWindow loadingWindow(window);
 
     std::shared_ptr<Map> map = std::make_shared<Map>();
 
@@ -37,9 +37,9 @@ void Window::show(MapLoader& mapLoader, const RenderConfig& config) {
 
 void Window::show() {
 
-    /*if (!ImGui::SFML::Init(window)) {
-        throw std::runtime_error("Failed to initialize ImGui.");
-    }*/
+    if (!ImGui::SFML::Init(window)) {
+        throw std::runtime_error("Faild to initialize ImGui.");
+    }
 
     sf::Clock deltaClock;
 
@@ -48,25 +48,58 @@ void Window::show() {
         while (const std::optional event = window.pollEvent()) {
 
             if (event.has_value()) {
-                //ImGui::SFML::ProcessEvent(window, event.value());
 
-                //if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+                ImGui::SFML::ProcessEvent(window, event.value());
+                if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
                     onEvent(event.value());
+                }
             }
         }
 
-        //ImGui::SFML::Update(window, deltaClock.restart());
+        ImGui::SFML::Update(window, deltaClock.restart());
 
-        //ImGui::ShowDemoWindow();
+        drawImGui();
 
         draw();
 
-        //ImGui::SFML::Render(window);
+        ImGui::SFML::Render(window);
 
         window.display();
     }
 
-    //ImGui::SFML::Shutdown();
+    ImGui::SFML::Shutdown();
+}
+
+void Window::drawImGui() {
+    
+    //ImGui::ShowDemoWindow();
+
+    drawInfoOverlay();
+}
+
+void Window::drawInfoOverlay() {
+
+    bool open = true;
+
+    const ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | 
+                                         ImGuiWindowFlags_AlwaysAutoResize |
+                                         ImGuiWindowFlags_NoSavedSettings |
+                                         ImGuiWindowFlags_NoFocusOnAppearing |
+                                         ImGuiWindowFlags_NoNav |
+                                         ImGuiWindowFlags_NoMove;
+
+    ImGui::SetNextWindowPos(ImVec2(10, 10));
+    ImGui::SetNextWindowBgAlpha(0.35f);
+
+    ImGui::Begin("Info", &open, windowFlags);
+
+    ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+    ImGui::Separator();
+    ImGui::Text("Vertices: %llu", mapRenderer.getVertexCount());
+    ImGui::Text("Edges:    %llu", mapRenderer.getEdgeCount());
+    ImGui::Text("Polygons: %llu", mapRenderer.getPolygonCount());
+
+    ImGui::End();
 }
 
 void Window::onEvent(const sf::Event& event) {
@@ -92,6 +125,15 @@ void Window::onEvent(const sf::Event& event) {
         if (keyPressed->code == sf::Keyboard::Key::C) {
             resetView();
         }
+
+    } else if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+
+        onMouseButtonPressed(*mousePressed);
+
+    } else if (const auto* mouseReleased = event.getIf<sf::Event::MouseButtonReleased>()) {
+
+        onMouseButtonReleased(*mouseReleased);
+
     }
 }
 
@@ -101,9 +143,11 @@ void Window::draw() {
 
     mapRenderer.draw(window);
 
-    drawCenter();
+    if (showMapCenter)
+        drawCenter();
 
-    window.draw(mapBorder.data(), mapBorder.size(), sf::PrimitiveType::LineStrip);
+    if (showMapBorder)
+        window.draw(mapBorder.data(), mapBorder.size(), sf::PrimitiveType::LineStrip);
 }
 
 void Window::drawCenter() {
@@ -159,7 +203,8 @@ void Window::onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent) 
 
 void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+    if ((sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && rightMouseButtonPressed) ||
+        (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && leftMouseButtonPressed)) {
 
         auto view = window.getView();
 
@@ -171,6 +216,24 @@ void Window::onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) {
     }
 
     mousePosition = mouseMovedEvent.position;
+}
+
+void Window::onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton) {
+
+    if (mouseButton.button == sf::Mouse::Button::Left) {
+        leftMouseButtonPressed = true;
+    } else if (mouseButton.button == sf::Mouse::Button::Right) {
+        rightMouseButtonPressed = true;
+    }
+}
+
+void Window::onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton) {
+
+    if (mouseButton.button == sf::Mouse::Button::Left) {
+        leftMouseButtonPressed = false;
+    } else if (mouseButton.button == sf::Mouse::Button::Right) {
+        rightMouseButtonPressed = false;
+    }
 }
 
 void Window::resetView() {
@@ -194,6 +257,7 @@ void Window::resetView() {
     view.setSize(sf::Vector2f(static_cast<float>(windowWidth), static_cast<float>(windowHeight))); // reset size, to reset zoom level
     view.setCenter(sf::Vector2f(x, y));
     view.zoom(zoom);
+    view.setRotation(sf::degrees(0.0f));
     window.setView(view);
 }
 

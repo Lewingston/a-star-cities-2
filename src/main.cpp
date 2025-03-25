@@ -73,25 +73,38 @@ const RenderConfig aStarRenderConfig {
 std::shared_ptr<Map> loadMapWithoutWindow(const std::string& filePath);
 void loadMapWithWindow(const std::string& filePath, Window& window);
 std::shared_ptr<Map> loadMapWithoutWindowPrepareForAStar(const std::string& filePath);
-void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window);
+void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window, const RenderConfig& renderConfig);
 
 int main(int argc, const char** args) {
 
-    const std::string filePath = argc == 2 ?
-        std::string(args[1]) :
-        //"../../maps/test/speyer.json";
-        "../../maps/roads_only/berlin.json";
+    std::string filePath = "../../maps/roads_only/speyer.json";
 
-    /*
-    //auto map = loadMapWithoutWindow(filePath);
-    auto map = loadMapWithoutWindowPrepareForAStar(filePath);
-    Window window(1600, 900, ProgramInfo::name);
-    window.renderMap(*map, aStarRenderConfig);
-    window.show();
-    */
+    std::string mode = "astar";
 
-    Window window(1600, 900, ProgramInfo::name);
-    loadMapWithWindowPrepareForAStar(filePath, window);
+    if (argc == 2) {
+        filePath = std::string(args[1]);
+    } else if (argc == 3) {
+        mode = std::string(args[1]);
+        filePath = std::string(args[2]);
+    }
+
+    if (mode == "normal") {
+        Window window(1600, 900, ProgramInfo::name);
+        loadMapWithWindow(filePath, window);
+    } else if (mode == "astar") {
+        AStarWindow window(1600, 900, ProgramInfo::name);
+        loadMapWithWindowPrepareForAStar(filePath, window, aStarRenderConfig);
+    } else if (mode == "astar_intersections") {
+        RenderConfig config = aStarRenderConfig;
+        config.randomColors = true;
+        config.renderIntersections = true;
+        AStarWindow window(1600, 900, ProgramInfo::name);
+        loadMapWithWindowPrepareForAStar(filePath, window, config);
+    } else {
+        std::cout << "Available modes:\n";
+        std::cout << "    norlam\n    astar\n    aster_intersections\n";
+        return 1;
+    }
 
     return 0;
 }
@@ -138,10 +151,10 @@ std::shared_ptr<Map> loadMapWithoutWindowPrepareForAStar(const std::string& file
     return map;
 }
 
-void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window) {
+void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& window, const RenderConfig& renderConfig) {
 
     MapLoader mapLoader(filePath, aStarParserConfig);
     mapLoader.setAStarLoad();
 
-    window.show(mapLoader, aStarRenderConfig);
+    window.show(mapLoader, renderConfig);
 }
