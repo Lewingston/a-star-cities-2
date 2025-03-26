@@ -39,7 +39,7 @@ void AStarWindow::show(MapLoader& mapLoader, const RenderConfig& config) {
 
 void AStarWindow::drawImGui() {
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     drawInfoOverlay();
 
@@ -52,8 +52,8 @@ void AStarWindow::displayUi() {
 
     if (ImGui::CollapsingHeader("Info")) {
 
-        ImGui::Text("Main roads:         %u", 0);
-        ImGui::Text("Main intersections: %u", 0);
+        ImGui::Text("Main roads:         %llu", map->getMainRoadCount());
+        ImGui::Text("Main intersections: %llu", map->getMainIntersections().size());
         ImGui::Text("All roads:          %llu", map->getAllRoads().size());
         ImGui::Text("All intersections:  %llu", map->getAllIntersections().size());
     }

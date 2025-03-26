@@ -67,6 +67,9 @@ namespace asc2 {
 
             [[nodiscard]] const std::vector<Building>& getAllBuildings() const noexcept { return buildings; }
 
+            [[nodiscard]] const std::vector<std::reference_wrapper<const Intersection>> getMainIntersections() const noexcept { return mainIntersections; }
+            [[nodiscard]] uint64_t getMainRoadCount() const noexcept { return mainRoadCount; }
+
             [[nodiscard]] std::pair<double, double> getCenter() const;
 
             [[nodiscard]] float getTotalRoadLength() const;
@@ -88,6 +91,9 @@ namespace asc2 {
             std::map<uint64_t, Intersection> intersections;
             std::map<uint64_t, Road> roads;
             std::vector<Building> buildings;
+
+            uint64_t mainRoadCount = 0;
+            std::vector<std::reference_wrapper<const Intersection>> mainIntersections;
 
             Dimensions dimensions;
 

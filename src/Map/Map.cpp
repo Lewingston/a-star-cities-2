@@ -289,6 +289,12 @@ void Map::segmentRoads(float length) {
 
     length = length * 360.0f / 40'000'000.0f;
 
+    mainRoadCount = roads.size();
+    mainIntersections.reserve(intersections.size());
+
+    for (const auto& [id, inter] : intersections)
+        mainIntersections.emplace_back(inter);
+
     std::vector<Road::NewRoadData> newRoads;
     std::vector<std::reference_wrapper<Road>> removeRoads;
 
