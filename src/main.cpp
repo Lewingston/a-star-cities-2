@@ -1,12 +1,4 @@
 
-/*#include "AStarCities.h"
-#include "MapParser/MapParser.h"
-#include "Map/Map.h"
-#include "MapRenderer/Window.h"
-#include "MapUtilities/NetworkFinder.h"*/
-
-//#include <iostream>
-
 #include "AStarCities.h"
 #include "MapParser/MapParserConfig.h"
 #include "MapParser/MapParser.h"
