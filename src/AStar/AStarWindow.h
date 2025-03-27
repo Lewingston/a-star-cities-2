@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../MapRenderer/Window.h"
+#include "AStarOverlay.h"
+#include "BorderDrawer.h"
+#include "../MapRenderer/Window.h" 
 
 namespace asc2 {
 
@@ -17,19 +19,45 @@ namespace asc2 {
 
         private:
 
+            void draw() override;
+
+            //void drawOverlayBounds();
+
             void drawImGui() override;
 
             void setRotation(float angel);
 
             void resetView() override;
 
+            void renderMap(const Map& map, const RenderConfig& config) override;
+
             void displayUi();
             void infoOverlay();
 
+            void initOverlay(sf::RenderTexture& texture);
+            void applyNewView(sf::Vector2f center, sf::Vector2f size, float rotation);
+
+            void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) override;
+            void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton) override;
+            void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton) override;
+
             std::shared_ptr<Map> map;
+
+            AStarOverlay overlay;
 
             float mapRotation = 0.0f;
             float rotationInput = 0.0f;
+
+            bool drawOverlayBoundsActive = false;
+
+            bool redrawMode = false;
+            bool currentlyDrawing = false;
+
+            BorderDrawer currentOverlayBorders;
+            BorderDrawer newOverlayBorders;
+
+            sf::Vector2f startPoint;
+            sf::Vector2f endPoint;
 
     };
 }

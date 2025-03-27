@@ -26,8 +26,8 @@ namespace asc2 {
 
             virtual void show(MapLoader& mapLoader, const RenderConfig& config);
 
-            void renderMap(const Map& map,
-                           const RenderConfig& config);
+            virtual void renderMap(const Map& map,
+                                   const RenderConfig& config);
 
         protected:
 
@@ -40,13 +40,13 @@ namespace asc2 {
             void onEvent(const sf::Event& event);
             void onResize(uint32_t newWidth, uint32_t newHeight);
             void onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent);
-            void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent);
-            void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton);
-            void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton);
+            virtual void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent);
+            virtual void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton);
+            virtual void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton);
 
             virtual void resetView();
 
-            void draw();
+            virtual void draw();
             void drawCenter();
 
             virtual void drawImGui();

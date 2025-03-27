@@ -27,6 +27,8 @@ namespace asc2 {
 
                 void adjust(double lon, double lat);
                 std::pair<double, double> getCenter() const;
+                std::pair<double, double> getPos() const;
+                std::pair<double, double> getSize() const;
             };
 
             Map() = default;
@@ -71,6 +73,8 @@ namespace asc2 {
             [[nodiscard]] uint64_t getMainRoadCount() const noexcept { return mainRoadCount; }
 
             [[nodiscard]] std::pair<double, double> getCenter() const;
+            [[nodiscard]] std::pair<double, double> getPosition() const;
+            [[nodiscard]] std::pair<double, double> getSize() const;
 
             [[nodiscard]] float getTotalRoadLength() const;
 

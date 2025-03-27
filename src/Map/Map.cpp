@@ -439,6 +439,16 @@ std::pair<double, double> Map::getCenter() const {
     return dimensions.getCenter();
 }
 
+std::pair<double, double> Map::getPosition() const {
+
+    return dimensions.getPos();
+}
+
+std::pair<double, double> Map::getSize() const {
+
+    return dimensions.getSize();
+}
+
 float Map::getTotalRoadLength() const {
 
     const float length = std::accumulate(roads.begin(), roads.end(), 0.0f,
@@ -472,4 +482,14 @@ std::pair<double, double> Map::Dimensions::getCenter() const {
     const double lat = minLat + (maxLat - minLat) / 2;
 
     return {lon, lat};
+}
+
+std::pair<double, double> Map::Dimensions::getPos() const {
+
+    return {minLon, minLat};
+}
+
+std::pair<double, double> Map::Dimensions::getSize() const {
+
+    return {maxLon - minLon, maxLat - minLat};
 }

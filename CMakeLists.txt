@@ -80,6 +80,9 @@ set(SOURCE_FILES
     src/MapRenderer/LineRenderer.cpp
     src/MapUtilities/NetworkFinder.cpp
     src/AStar/AStarWindow.cpp
+    src/AStar/AStarOverlay.cpp
+    src/AStar/Solver.cpp
+    src/AStar/BorderDrawer.cpp
     src/MapLoader/LoadingWindow.cpp
     src/MapLoader/MapLoader.cpp
 )
