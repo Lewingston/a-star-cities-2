@@ -19,10 +19,18 @@ namespace asc2 {
             void setPosition(const sf::Vector2f& position);
             void setRotation(float rotation);
             
+            void clear();
+
+            sf::RenderTexture& getCurrentTexture() { return textures[index]; }
+
+            sf::Sprite& getCurrentSprite() {
+                return index == 0 ? sprite1 : sprite2;
+            }
+
             void draw(sf::RenderTarget& target);
 
             [[nodiscard]] sf::Vector2f getSize() const { return size; };
-            [[nodiscard]] sf::Vector2f getPosition() const { return sprite.getPosition(); }
+            [[nodiscard]] sf::Vector2f getPosition() const { return sprite1.getPosition(); }
 
         private:
 
@@ -30,7 +38,8 @@ namespace asc2 {
             void updateSprites();
 
             std::array<sf::RenderTexture, 2> textures;
-            sf::Sprite sprite;
+            sf::Sprite sprite1;
+            sf::Sprite sprite2;
 
             sf::Vector2f size;
 

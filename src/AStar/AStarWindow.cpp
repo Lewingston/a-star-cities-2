@@ -70,15 +70,19 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
     const bool moreWide = mapRatio > windowRatio;
 
     const sf::Vector2u resolution = {
-        moreWide ? window.getSize().x : static_cast<uint32_t>(static_cast<float>(window.getSize().y) * mapRatio / windowRatio),
-        moreWide ? static_cast<uint32_t>(static_cast<float>(window.getSize().x) * windowRatio / mapRatio) : window.getSize().y 
+        moreWide ? window.getSize().x : static_cast<uint32_t>(static_cast<float>(window.getSize().x) * mapRatio / windowRatio),
+        moreWide ? static_cast<uint32_t>(static_cast<float>(window.getSize().y) * windowRatio / mapRatio) : window.getSize().y 
     };
 
     overlay.setResolution(resolution);
     overlay.setPosition(center);
     overlay.setSize(size);
     overlay.setRotation(rotation);
-    overlay.setView(window.getView());
+
+    sf::View view = window.getView();
+    view.setCenter(center);
+    view.setSize(size);
+    overlay.setView(view);
 
     currentOverlayBorders.update(center, size, rotation);
 
@@ -92,7 +96,11 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
         nodes.emplace_back(inter.getNode().lon, inter.getNode().lat, color);
     }
 
-    intersectionBuffer = std::make_unique<ShapeBuffer>(nodes);
+    //intersectionBuffer = std::make_unique<ShapeBuffer>(nodes);
+
+    overlay.clear();
+    //intersectionBuffer->draw(overlay.getCurrentTexture());
+    //overlay.getCurrentTexture().display();
 }
 
 void AStarWindow::resetOverlay() {
@@ -113,9 +121,6 @@ void AStarWindow::resetOverlay() {
 void AStarWindow::draw() {
 
     Window::draw();
-
-    if (intersectionBuffer)
-        intersectionBuffer->draw(window);
 
     if (drawOverlayBoundsActive)
         currentOverlayBorders.draw(window);

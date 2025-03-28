@@ -47,8 +47,6 @@ namespace asc2 {
 
             std::shared_ptr<Map> map;
 
-            std::unique_ptr<ShapeBuffer> intersectionBuffer;
-
             AStarOverlay overlay;
 
             float mapRotation = 0.0f;
@@ -66,6 +64,5 @@ namespace asc2 {
 
             sf::Vector2f startPoint;
             sf::Vector2f endPoint;
-
     };
 }
