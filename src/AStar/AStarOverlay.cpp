@@ -60,7 +60,7 @@ void AStarOverlay::setRotation(float rotation) {
 
 void AStarOverlay::draw(sf::RenderTarget& target) {
 
-    textures[index].clear(sf::Color(0, 255, 0, 128));
+    //textures[index].clear(sf::Color(0, 255, 0, 128));
     textures[index].display();
 
     sprite.setTexture(textures[index].getTexture(), true);

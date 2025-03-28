@@ -21,13 +21,13 @@ namespace asc2 {
 
             void draw() override;
 
-            //void drawOverlayBounds();
-
             void drawImGui() override;
 
             void setRotation(float angel);
 
             void resetView() override;
+            void setView(const BorderDrawer& borders);
+            void setView(sf::Vector2f center, sf::Vector2f size, float rotation);
 
             void renderMap(const Map& map, const RenderConfig& config) override;
 
@@ -36,6 +36,7 @@ namespace asc2 {
 
             void initOverlay(sf::RenderTexture& texture);
             void applyNewView(sf::Vector2f center, sf::Vector2f size, float rotation);
+            void resetOverlay();
 
             void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) override;
             void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton) override;
@@ -52,6 +53,8 @@ namespace asc2 {
 
             bool redrawMode = false;
             bool currentlyDrawing = false;
+
+            bool showInfoOverlay = true;
 
             BorderDrawer currentOverlayBorders;
             BorderDrawer newOverlayBorders;

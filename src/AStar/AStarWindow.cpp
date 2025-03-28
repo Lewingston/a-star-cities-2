@@ -60,18 +60,7 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
     const float windowWidth  = static_cast<float>(window.getSize().x);
     const float windowHeight = static_cast<float>(window.getSize().y);
 
-    if (size.x / size.y > windowWidth / windowHeight) {
-        zoom = size.x / windowWidth;
-    } else {
-        zoom = size.y / windowHeight;
-    }
-
-    auto view = window.getView();
-    view.setSize(sf::Vector2f(windowWidth, windowHeight));
-    view.setCenter(center);
-    view.setRotation(sf::degrees(rotation));
-    view.zoom(zoom);
-    window.setView(view);
+    setView(center, size, rotation);
 
     const float windowRatio = std::abs(windowWidth / windowHeight);
     const float mapRatio = std::abs(size.x / size.y);
@@ -91,6 +80,21 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
     currentOverlayBorders.update(center, size, rotation);
 }
 
+void AStarWindow::resetOverlay() {
+
+    const sf::Vector2f center {
+        static_cast<float>(map->getCenter().first),
+        static_cast<float>(-map->getCenter().second)
+    };
+
+    const sf::Vector2f size = {
+        static_cast<float>(map->getSize().first),
+        static_cast<float>(map->getSize().second)
+    };
+
+    applyNewView(center, size, 0.0f);
+}
+
 void AStarWindow::draw() {
 
     Window::draw();
@@ -108,7 +112,8 @@ void AStarWindow::drawImGui() {
 
     //ImGui::ShowDemoWindow();
 
-    drawInfoOverlay();
+    if (showInfoOverlay)
+        drawInfoOverlay();
 
     displayUi();
 }
@@ -127,12 +132,17 @@ void AStarWindow::displayUi() {
 
     if (ImGui::CollapsingHeader("Controls")) {
 
+        ImGui::Checkbox("Show Info Overlay", &showInfoOverlay);
         ImGui::Checkbox("Show map center", &showMapCenter);
         ImGui::Checkbox("Show map border", &showMapBorder);
         ImGui::Checkbox("Show overlay border", &drawOverlayBoundsActive);
 
-        if (ImGui::Button("Reset View Port")) {
+        if (ImGui::Button("Reset View Port to Map Border")) {
             resetView();
+        }
+
+        if (ImGui::Button("Reset View Port to Render Overlay")) {
+            setView(currentOverlayBorders);
         }
 
         ImGui::SliderFloat("Map rotation", &rotationInput, -180.0f, 180.0f);
@@ -144,8 +154,11 @@ void AStarWindow::displayUi() {
         }
 
         if (!redrawMode) {
-            if (ImGui::Button("Redraw overlay")) {
+            if (ImGui::Button("Redraw Overlay")) {
                 redrawMode = true;
+            }
+            if (ImGui::Button("Reset Overlay")) {
+                resetOverlay();
             }
         } else {
             if (ImGui::Button("Ok")) {
@@ -205,8 +218,42 @@ void AStarWindow::setRotation(float angel) {
 
 void AStarWindow::resetView() {
 
-    Window::resetView();
+    const sf::Vector2f center = {
+        static_cast<float>(map->getCenter().first),
+        static_cast<float>(-map->getCenter().second)
+    };
 
-    mapRotation = 0.0f;
-    rotationInput = 0.0f;
+    const sf::Vector2f size = {
+        static_cast<float>(map->getSize().first),
+        static_cast<float>(map->getSize().second)
+    };
+
+    setView(center, size, 0.0f);
+}
+
+void AStarWindow::setView(const BorderDrawer& borders) {
+
+    setView(borders.getCenter(), borders.getSize(), borders.getRotation());
+}
+
+void AStarWindow::setView(sf::Vector2f center, sf::Vector2f size, float rotation) {
+
+    const float windowWidth  = static_cast<float>(window.getSize().x);
+    const float windowHeight = static_cast<float>(window.getSize().y);
+
+    if (size.x / size.y > windowWidth / windowHeight) {
+        zoom = size.x / windowWidth;
+    } else {
+        zoom = size.y / windowHeight;
+    }
+
+    auto view = window.getView();
+    view.setSize(sf::Vector2f(windowWidth, windowHeight));
+    view.setCenter(center);
+    view.setRotation(sf::degrees(rotation));
+    view.zoom(zoom);
+    window.setView(view);
+
+    mapRotation = rotation;
+    rotationInput = rotation;
 }
