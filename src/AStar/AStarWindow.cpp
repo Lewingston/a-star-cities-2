@@ -3,6 +3,9 @@
 #include "../MapLoader/LoadingWindow.h"
 #include "../MapLoader/MapLoader.h"
 #include "../MapParser/MapParser.h"
+#include "../MapUtilities/Geometry.h"
+#include "../MapRenderer/NodeRenderer.h"
+#include "../MapRenderer/Color.h"
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -78,6 +81,18 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
     overlay.setView(window.getView());
 
     currentOverlayBorders.update(center, size, rotation);
+
+    const auto intersections = getIntersectionsInArea(currentOverlayBorders.getPoints());
+
+    std::vector<NodeRenderer> nodes;
+    nodes.reserve(intersections.size());
+
+    for (const Intersection& inter : intersections) {
+        const sf::Color color = Color::getRandomColor();
+        nodes.emplace_back(inter.getNode().lon, inter.getNode().lat, color);
+    }
+
+    intersectionBuffer = std::make_unique<ShapeBuffer>(nodes);
 }
 
 void AStarWindow::resetOverlay() {
@@ -98,6 +113,9 @@ void AStarWindow::resetOverlay() {
 void AStarWindow::draw() {
 
     Window::draw();
+
+    if (intersectionBuffer)
+        intersectionBuffer->draw(window);
 
     if (drawOverlayBoundsActive)
         currentOverlayBorders.draw(window);
@@ -256,4 +274,24 @@ void AStarWindow::setView(sf::Vector2f center, sf::Vector2f size, float rotation
 
     mapRotation = rotation;
     rotationInput = rotation;
+}
+
+std::vector<std::reference_wrapper<const Intersection>> AStarWindow::getIntersectionsInArea(const std::array<sf::Vector2f, 4>& area) const {
+
+    std::vector<std::reference_wrapper<const Intersection>> inArea;
+
+    const Geometry::Rectangle rectangle = { area };
+
+    for (const Intersection& inter : map->getMainIntersections()) {
+
+        const sf::Vector2f pos { 
+            static_cast<float>(inter.getNode().lon),
+            static_cast<float>(-inter.getNode().lat) };
+
+        if (Geometry::pointInRectangle(pos, rectangle)) {
+            inArea.emplace_back(inter);
+        }
+    }
+
+    return inArea;
 }

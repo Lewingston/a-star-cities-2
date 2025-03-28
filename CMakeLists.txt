@@ -79,6 +79,7 @@ set(SOURCE_FILES
     src/MapRenderer/NodeRenderer.cpp
     src/MapRenderer/LineRenderer.cpp
     src/MapUtilities/NetworkFinder.cpp
+    src/MapUtilities/Geometry.cpp
     src/AStar/AStarWindow.cpp
     src/AStar/AStarOverlay.cpp
     src/AStar/Solver.cpp

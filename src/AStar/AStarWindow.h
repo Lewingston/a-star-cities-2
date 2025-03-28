@@ -3,6 +3,7 @@
 #include "AStarOverlay.h"
 #include "BorderDrawer.h"
 #include "../MapRenderer/Window.h" 
+#include "../MapRenderer/ShapeBuffer.h"
 
 namespace asc2 {
 
@@ -42,7 +43,11 @@ namespace asc2 {
             void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton) override;
             void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton) override;
 
+            [[nodiscard]] std::vector<std::reference_wrapper<const Intersection>> getIntersectionsInArea(const std::array<sf::Vector2f, 4>& area) const;
+
             std::shared_ptr<Map> map;
+
+            std::unique_ptr<ShapeBuffer> intersectionBuffer;
 
             AStarOverlay overlay;
 

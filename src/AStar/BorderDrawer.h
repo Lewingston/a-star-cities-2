@@ -17,6 +17,8 @@ namespace asc2 {
             [[nodiscard]] sf::Vector2f getCenter() const noexcept { return center; }
             [[nodiscard]] sf::Vector2f getSize() const noexcept { return size; }
 
+            [[nodiscard]] const std::array<sf::Vector2f, 4>& getPoints() const noexcept { return points; }
+
         private:
 
             sf::Color color = sf::Color::White;
