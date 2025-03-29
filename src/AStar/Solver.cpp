@@ -155,8 +155,8 @@ void Solver::doStepAndDraw() {
     if (isSolved())
         return;
 
-    const uint32_t roadCount = 1 + (openList.size() / 25);
-    const float minDistance = 50.0f;
+    const uint32_t roadCount = 1 + (openList.size() / 1);
+    const float minDistance = 150.0f;
 
     const auto roads = doStep(roadCount, minDistance);
     std::vector<LineRenderer> lines;
@@ -176,6 +176,8 @@ std::vector<std::reference_wrapper<const Road>> Solver::doStep(float minLength, 
     std::vector<std::reference_wrapper<const Road>> roads;
 
     float totalLength = 0.0f;
+
+    minLength = minLength * 360 / 40'000'000;
 
     while (totalLength <= minLength && roads.size() <= minRoads) {
 
