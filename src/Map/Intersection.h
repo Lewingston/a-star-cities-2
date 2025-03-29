@@ -32,6 +32,7 @@ namespace asc2 {
             [[nodiscard]] const std::vector<std::reference_wrapper<Road>>& getRoads() const noexcept { return roads; }
 
             bool operator== (const Intersection& inter) const { return inter.getNode().id == node.id; }
+            bool operator< (const Intersection& inter) const { return getId() < inter.getId(); }
 
             [[nodiscard]] std::vector<Connection> getConnections(bool calculateDistance) const;
 

@@ -2,17 +2,42 @@
 #include "Solver.h"
 #include "BorderDrawer.h"
 #include "../MapUtilities/Geometry.h"
+#include "../MapRenderer/LineRenderer.h"
+#include "../MapRenderer/LineBuffer.h"
 
 #include <SFML/Graphics/CircleShape.hpp>
 
 #include <cmath>
+#include <iostream>
 
 using namespace asc2;
 
 Solver::Solver(AStarOverlay& overlay, std::shared_ptr<Map> map) :
     overlay(overlay),
     map(map),
-    randomGenerator(std::random_device{}()) { }
+    randomGenerator(std::random_device{}()) { 
+
+    if (map)
+        initNodes();
+}
+
+void Solver::setMap(std::shared_ptr<Map> map) {
+
+    this->map = map;
+
+    if (map)
+        initNodes();
+    else
+        nodes.clear();
+}
+
+void Solver::initNodes() {
+
+    for (const auto& [id, intersection] : map->getAllIntersections()) {
+
+        nodes.emplace(id, PathNode(intersection));
+    }
+}
 
 void Solver::selectStartAndEndNode() {
 
@@ -28,7 +53,28 @@ void Solver::selectStartAndEndNode() {
     startPoint = &inter1;
     endPoint   = &inter2;
 
+    openList.clear();
+    closedList.clear();
+
+    selectCurrentNode(startPoint->getId());
+    currentNode->setDistanceTraveled(0);
+    currentNode->setDistanceToTarget(startPoint->getNode().distance(endPoint->getNode()));
+    openList.insert(*currentNode);
+
+    solved = false;
+
     drawStartAndEndPoint(overlay.getCurrentTexture());
+}
+
+void Solver::selectCurrentNode(uint64_t id) {
+
+    auto find = nodes.find(id);
+    if (find == nodes.end())
+        throw std::runtime_error("Node is not in list of all nodes. ID: " + std::to_string(id));
+
+    currentNode = &(find->second);
+    currentConnections = currentNode->getConnections();
+    currentConnectionIterator = currentConnections.begin();
 }
 
 std::vector<std::reference_wrapper<const Intersection>> Solver::getIntersectionsInArea(sf::Vector2f center, sf::Vector2f size, float rotation) const {
@@ -102,6 +148,127 @@ std::pair<const Intersection&, const Intersection&> Solver::selectRandomIntersec
         selectRandomIntersection(intersections),
         selectRandomIntersection(intersections)
     };
+}
+
+void Solver::doStepAndDraw() {
+
+    if (isSolved())
+        return;
+
+    const auto roads = doStep();
+    std::vector<LineRenderer> lines;
+    lines.reserve(roads.size());
+    for (const Road& road : roads) {
+
+        lines.emplace_back(road.getWay(), color);
+    }
+
+    LineBuffer buffer(lines, RenderConfig());
+
+    buffer.draw(overlay.getCurrentTexture());
+}
+
+std::vector<std::reference_wrapper<const Road>> Solver::doStep() {
+
+    std::vector<std::reference_wrapper<const Road>> roads;
+
+    const float requiredLength = 0.0f;
+
+    float totalLength = 0.0f;
+
+    while (totalLength <= requiredLength) {
+
+        const Road* road = checkNextRoad();
+        if (road != nullptr) {
+            totalLength += road->getLength();
+            roads.emplace_back(*road);
+        } else if (solved == true) {
+            return roads;
+        }
+    }
+
+    return roads;
+}
+
+const Road* Solver::checkNextRoad() {
+
+    if (currentNode == nullptr) {
+        if (!selectNextNode()) {
+            return nullptr;
+        }
+    }
+
+    const Intersection::Connection& currentConnection = *currentConnectionIterator;
+
+    const uint64_t nextIntersectionId = currentConnection.intersection.getId();
+    auto find = nodes.find(nextIntersectionId);
+    if (find == nodes.end())
+        throw std::runtime_error("Unable to find node in list of all nodes. Id: " + std::to_string(nextIntersectionId));
+    PathNode& nextNode = find->second;
+
+    //std::cout << "Score: " << nextNode.getScore() << '\n';
+
+    if (closedList.contains(nextNode)) {
+        advanceConnectionIterator();
+        return nullptr; // Next node was allready checked
+    }
+
+    double newDistance = currentConnection.distance + currentNode->getDistanceTraveled();
+
+    if (openList.contains(nextNode) && newDistance >= nextNode.getDistanceTraveled()) {
+        advanceConnectionIterator();
+        return nullptr; // There is allready a better connection to the next road
+    }
+
+    nextNode.setPredecessor(*currentNode, currentConnection.road);
+    nextNode.setDistanceTraveled(newDistance);
+    const double distanceToTarget = currentConnection.intersection.getNode().distance(endPoint->getNode());
+    nextNode.setDistanceToTarget(distanceToTarget);
+
+    // Elements in a set are constant. Therefor the element has to be removed
+    // and reinserted for the key to be updated.
+    auto [iter, success] = openList.insert(nextNode);
+    if (!success) {
+        openList.erase(iter);
+        openList.insert(nextNode);
+    }
+
+    advanceConnectionIterator();
+
+    return &currentConnection.road;
+}
+
+void Solver::advanceConnectionIterator() {
+
+    currentConnectionIterator++;
+    if (currentConnectionIterator == currentConnections.end()) {
+        currentNode = nullptr; // This node is done. Move to the next node.
+    }
+}
+
+bool Solver::selectNextNode() {
+
+    if (openList.empty())
+        return false; // No more nodes in open list. Unable to find solution.
+
+    // get the node with the lowest score from the open list and remove it
+    auto iter = openList.begin();
+    PathNode& currentNode = iter->get();
+
+    if (currentNode.getIntersection() == *endPoint) {
+        solved = true;
+        return false;
+    }
+    
+    openList.erase(iter);
+
+    this->currentNode = &currentNode;
+    currentConnections = currentNode.getConnections();
+    currentConnectionIterator = currentConnections.begin();
+
+    closedList.insert(currentNode);
+
+    return true;
 }
 
 void Solver::drawPoint(const Intersection& intersection, sf::RenderTarget& target) {

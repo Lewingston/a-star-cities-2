@@ -117,6 +117,8 @@ void AStarWindow::draw() {
     if (redrawMode)
         newOverlayBorders.draw(window);
 
+    solver.doStepAndDraw();
+
     overlay.draw(window);
 
     //solver.drawStartAndEndPoint(window);
