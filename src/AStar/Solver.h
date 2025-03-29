@@ -27,7 +27,7 @@ namespace asc2 {
 
             void drawStartAndEndPoint(sf::RenderTarget& target);
 
-            std::vector<std::reference_wrapper<const Road>> doStep();
+            std::vector<std::reference_wrapper<const Road>> doStep(float minLength = 0.0f, uint32_t minRoads = 1);
             void doStepAndDraw();
 
             [[nodiscard]] bool isSolved() const noexcept { return solved; }

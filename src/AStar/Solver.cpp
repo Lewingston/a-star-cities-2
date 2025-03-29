@@ -155,7 +155,10 @@ void Solver::doStepAndDraw() {
     if (isSolved())
         return;
 
-    const auto roads = doStep();
+    const uint32_t roadCount = 1 + (openList.size() / 25);
+    const float minDistance = 50.0f;
+
+    const auto roads = doStep(roadCount, minDistance);
     std::vector<LineRenderer> lines;
     lines.reserve(roads.size());
     for (const Road& road : roads) {
@@ -168,15 +171,13 @@ void Solver::doStepAndDraw() {
     buffer.draw(overlay.getCurrentTexture());
 }
 
-std::vector<std::reference_wrapper<const Road>> Solver::doStep() {
+std::vector<std::reference_wrapper<const Road>> Solver::doStep(float minLength, uint32_t minRoads) {
 
     std::vector<std::reference_wrapper<const Road>> roads;
 
-    const float requiredLength = 0.0f;
-
     float totalLength = 0.0f;
 
-    while (totalLength <= requiredLength) {
+    while (totalLength <= minLength && roads.size() <= minRoads) {
 
         const Road* road = checkNextRoad();
         if (road != nullptr) {
