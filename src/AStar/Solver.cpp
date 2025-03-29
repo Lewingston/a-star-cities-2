@@ -39,7 +39,31 @@ void Solver::initNodes() {
     }
 }
 
+void Solver::reset() {
+
+    selectStartAndEndNode();
+}
+
+void Solver::restart() {
+
+    openList.clear();
+    closedList.clear();
+
+    selectCurrentNode(startPoint->getId());
+
+    currentNode->setDistanceTraveled(0);
+    currentNode->setDistanceToTarget(startPoint->getNode().distance(endPoint->getNode()));
+    openList.insert(*currentNode);
+
+    solved = false;
+
+    overlay.clear();
+    drawStartAndEndPoint(overlay.getCurrentTexture());
+}
+
 void Solver::selectStartAndEndNode() {
+
+    overlay.clear();
 
     const sf::Vector2f overlaySize = overlay.getSize();
 
@@ -150,12 +174,14 @@ std::pair<const Intersection&, const Intersection&> Solver::selectRandomIntersec
     };
 }
 
-void Solver::doStepAndDraw() {
+void Solver::doStepAndDraw(float speed, float roadPercentage) {
 
     if (isSolved())
         return;
 
-    const auto roads = doStep(75.0f, openList.size() / 10);
+    const uint32_t roadCount = static_cast<uint32_t>(static_cast<float>(openList.size()) * roadPercentage);
+
+    const auto roads = doStep(speed, roadCount);
     std::vector<LineRenderer> lines;
     lines.reserve(roads.size());
     for (const Road& road : roads) {

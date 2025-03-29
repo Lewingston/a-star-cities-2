@@ -117,7 +117,7 @@ void AStarWindow::draw() {
     if (redrawMode)
         newOverlayBorders.draw(window);
 
-    solver.doStepAndDraw();
+    solver.doStepAndDraw(animationSpeed, roadPercentage / 100.0f);
 
     overlay.draw(window);
 
@@ -181,6 +181,21 @@ void AStarWindow::displayUi() {
                 applyNewView(newOverlayBorders.getCenter(), newOverlayBorders.getSize(), newOverlayBorders.getRotation());
                 redrawMode = false;
             }
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Simulation Controls")) {
+
+        ImGui::SliderFloat("Speed", &animationSpeed, 0.0f, 1000.0f);
+        ImGui::Text("Number of roads per frame\nas %% of nodes in the open list");
+        ImGui::SliderFloat("%%", &roadPercentage, 0.0f, 100.0f);
+
+        if (ImGui::Button("Restart")) {
+            solver.restart();
+        }
+
+        if (ImGui::Button("Reset")) {
+            solver.reset();
         }
     }
 

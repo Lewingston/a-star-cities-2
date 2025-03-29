@@ -66,5 +66,8 @@ namespace asc2 {
 
             sf::Vector2f startPoint;
             sf::Vector2f endPoint;
+
+            float animationSpeed = 75.0f;
+            float roadPercentage = 100.0f / 15.0f;
     };
 }
