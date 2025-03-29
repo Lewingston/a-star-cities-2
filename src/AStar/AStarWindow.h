@@ -2,6 +2,7 @@
 
 #include "AStarOverlay.h"
 #include "BorderDrawer.h"
+#include "Solver.h"
 #include "../MapRenderer/Window.h" 
 #include "../MapRenderer/ShapeBuffer.h"
 
@@ -48,6 +49,7 @@ namespace asc2 {
             std::shared_ptr<Map> map;
 
             AStarOverlay overlay;
+            Solver solver;
 
             float mapRotation = 0.0f;
             float rotationInput = 0.0f;

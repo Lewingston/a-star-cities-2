@@ -31,6 +31,8 @@ namespace asc2 {
 
             [[nodiscard]] sf::Vector2f getSize() const { return size; };
             [[nodiscard]] sf::Vector2f getPosition() const { return sprite1.getPosition(); }
+            [[nodiscard]] sf::Vector2u getResolution() const { return textures[0].getSize(); }
+            [[nodiscard]] float getRotation() const { return sprite1.getRotation().asDegrees(); }
 
         private:
 

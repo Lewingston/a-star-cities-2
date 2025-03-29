@@ -19,7 +19,8 @@ using namespace asc2;
 
 AStarWindow::AStarWindow(uint32_t width, uint32_t height, const std::string& title) :
     Window(width, height, title),
-    overlay(sf::Vector2u(width, height)) {
+    overlay(sf::Vector2u(width, height)),
+    solver(overlay, nullptr) {
 
     showMapCenter = false;
     showMapBorder = false;
@@ -37,6 +38,7 @@ void AStarWindow::show(MapLoader& mapLoader, const RenderConfig& config) {
 
     mapLoader.join();
 
+    solver.setMap(map);
     renderMap(*map, config);
     Window::show();
 }
@@ -86,21 +88,8 @@ void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rot
 
     currentOverlayBorders.update(center, size, rotation);
 
-    const auto intersections = getIntersectionsInArea(currentOverlayBorders.getPoints());
-
-    std::vector<NodeRenderer> nodes;
-    nodes.reserve(intersections.size());
-
-    for (const Intersection& inter : intersections) {
-        const sf::Color color = Color::getRandomColor();
-        nodes.emplace_back(inter.getNode().lon, inter.getNode().lat, color);
-    }
-
-    //intersectionBuffer = std::make_unique<ShapeBuffer>(nodes);
-
     overlay.clear();
-    //intersectionBuffer->draw(overlay.getCurrentTexture());
-    //overlay.getCurrentTexture().display();
+    solver.selectStartAndEndNode();
 }
 
 void AStarWindow::resetOverlay() {
@@ -129,6 +118,8 @@ void AStarWindow::draw() {
         newOverlayBorders.draw(window);
 
     overlay.draw(window);
+
+    //solver.drawStartAndEndPoint(window);
 }
 
 void AStarWindow::drawImGui() {
