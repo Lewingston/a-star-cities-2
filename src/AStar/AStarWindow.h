@@ -27,6 +27,8 @@ namespace asc2 {
 
             void setRotation(float angel);
 
+            void onResize(uint32_t newWidth, uint32_t newHeight) override;
+
             void resetView() override;
             void setView(const BorderDrawer& borders);
             void setView(sf::Vector2f center, sf::Vector2f size, float rotation);

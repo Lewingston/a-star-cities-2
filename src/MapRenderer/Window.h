@@ -38,7 +38,7 @@ namespace asc2 {
             RenderConfig config;
 
             void onEvent(const sf::Event& event);
-            void onResize(uint32_t newWidth, uint32_t newHeight);
+            virtual void onResize(uint32_t newWidth, uint32_t newHeight);
             void onMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheelEvent);
             virtual void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent);
             virtual void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton);

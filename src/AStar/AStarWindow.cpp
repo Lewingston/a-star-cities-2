@@ -60,6 +60,13 @@ void AStarWindow::renderMap(const Map& map, const RenderConfig& config) {
     applyNewView(position, size, 0.0f);
 }
 
+void AStarWindow::onResize(uint32_t newWidth, uint32_t newHeight) {
+
+    Window::onResize(newWidth, newHeight);
+
+    resetOverlay();
+}
+
 void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rotation) {
     
     const float windowWidth  = static_cast<float>(window.getSize().x);
