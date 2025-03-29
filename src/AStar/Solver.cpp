@@ -155,10 +155,7 @@ void Solver::doStepAndDraw() {
     if (isSolved())
         return;
 
-    const uint32_t roadCount = 1 + (openList.size() / 1);
-    const float minDistance = 150.0f;
-
-    const auto roads = doStep(roadCount, minDistance);
+    const auto roads = doStep(75.0f, openList.size() / 10);
     std::vector<LineRenderer> lines;
     lines.reserve(roads.size());
     for (const Road& road : roads) {
@@ -171,33 +168,54 @@ void Solver::doStepAndDraw() {
     buffer.draw(overlay.getCurrentTexture());
 }
 
-std::vector<std::reference_wrapper<const Road>> Solver::doStep(float minLength, uint32_t minRoads) {
+std::vector<std::reference_wrapper<const Road>> Solver::doStep(float speed, uint32_t maxRoads) {
+
+    if (maxRoads == 0)
+        maxRoads = 1;
 
     std::vector<std::reference_wrapper<const Road>> roads;
 
-    float totalLength = 0.0f;
+    const float targetDistance = speed * 360.0f / 40'000'000.0f;
 
-    minLength = minLength * 360 / 40'000'000;
+    const double startDistance = [&]() -> double{
 
-    while (totalLength <= minLength && roads.size() <= minRoads) {
+        if (currentNode != nullptr)
+            return currentNode->getDistanceTraveled();
 
-        const Road* road = checkNextRoad();
-        if (road != nullptr) {
-            totalLength += road->getLength();
-            roads.emplace_back(*road);
+        if (!openList.empty())
+            return openList.begin()->get().getDistanceTraveled();
+
+        return 0.0;
+    }();
+
+    while (roads.size() < maxRoads) {
+
+        std::optional<Intersection::Connection> connection = checkNextRoad();
+
+        if (connection.has_value()) {
+
+            roads.emplace_back(connection->road);
+
+            const PathNode& node = nodes.find(connection->intersection.getId())->second;
+
+            if (node.getDistanceTraveled() - startDistance > targetDistance)
+                break;
+
         } else if (solved == true) {
-            return roads;
+
+            break;
         }
+
     }
 
     return roads;
 }
 
-const Road* Solver::checkNextRoad() {
+std::optional<Intersection::Connection> Solver::checkNextRoad() {
 
     if (currentNode == nullptr) {
         if (!selectNextNode()) {
-            return nullptr;
+            return {};
         }
     }
 
@@ -213,14 +231,14 @@ const Road* Solver::checkNextRoad() {
 
     if (closedList.contains(nextNode)) {
         advanceConnectionIterator();
-        return nullptr; // Next node was allready checked
+        return {}; // Next node was allready checked
     }
 
     double newDistance = currentConnection.distance + currentNode->getDistanceTraveled();
 
     if (openList.contains(nextNode) && newDistance >= nextNode.getDistanceTraveled()) {
         advanceConnectionIterator();
-        return nullptr; // There is allready a better connection to the next road
+        return {}; // There is allready a better connection to the next road
     }
 
     nextNode.setPredecessor(*currentNode, currentConnection.road);
@@ -238,7 +256,7 @@ const Road* Solver::checkNextRoad() {
 
     advanceConnectionIterator();
 
-    return &currentConnection.road;
+    return currentConnection;
 }
 
 void Solver::advanceConnectionIterator() {

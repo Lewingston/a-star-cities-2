@@ -27,7 +27,7 @@ namespace asc2 {
 
             void drawStartAndEndPoint(sf::RenderTarget& target);
 
-            std::vector<std::reference_wrapper<const Road>> doStep(float minLength = 0.0f, uint32_t minRoads = 1);
+            std::vector<std::reference_wrapper<const Road>> doStep(float speed, uint32_t maxRoads);
             void doStepAndDraw();
 
             [[nodiscard]] bool isSolved() const noexcept { return solved; }
@@ -90,7 +90,7 @@ namespace asc2 {
 
             void selectCurrentNode(uint64_t id);
 
-            const Road* checkNextRoad();
+            std::optional<Intersection::Connection> checkNextRoad();
             bool selectNextNode();
             void advanceConnectionIterator();
 
