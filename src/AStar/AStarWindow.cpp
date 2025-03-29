@@ -117,16 +117,12 @@ void AStarWindow::draw() {
     if (redrawMode)
         newOverlayBorders.draw(window);
 
-    solver.doStepAndDraw(animationSpeed, roadPercentage / 100.0f);
+    solver.doStepAndDraw(animationSpeed * speedMultiplier, roadPercentage / 100.0f * speedMultiplier);
 
     overlay.draw(window);
-
-    //solver.drawStartAndEndPoint(window);
 }
 
 void AStarWindow::drawImGui() {
-
-    //ImGui::ShowDemoWindow();
 
     if (showInfoOverlay)
         drawInfoOverlay();
@@ -188,7 +184,14 @@ void AStarWindow::displayUi() {
 
         ImGui::SliderFloat("Speed", &animationSpeed, 0.0f, 1000.0f);
         ImGui::Text("Number of roads per frame\nas %% of nodes in the open list");
-        ImGui::SliderFloat("%%", &roadPercentage, 0.0f, 100.0f);
+        ImGui::SliderFloat("%", &roadPercentage, 0.0f, 100.0f);
+        ImGui::SliderFloat("Speed Multiplier", &speedMultiplier, 0.0f, 100.0f);
+
+        if (ImGui::Button("Reset Speed Settings")) {
+            animationSpeed = 75.0f;
+            roadPercentage = 100.0f / 15.0f;
+            speedMultiplier = 1.0f;
+        }
 
         if (ImGui::Button("Restart")) {
             solver.restart();
