@@ -43,6 +43,7 @@ namespace asc2 {
             virtual void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent);
             virtual void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton);
             virtual void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton);
+            virtual void onKeyPressed(const sf::Event::KeyPressed& keyEvent);
 
             virtual void resetView();
 

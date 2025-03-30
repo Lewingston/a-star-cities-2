@@ -45,6 +45,7 @@ namespace asc2 {
             void onMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) override;
             void onMouseButtonPressed(const sf::Event::MouseButtonPressed& mouseButton) override;
             void onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseButton) override;
+            void onKeyPressed(const sf::Event::KeyPressed& keyPressed) override;
 
             [[nodiscard]] std::vector<std::reference_wrapper<const Intersection>> getIntersectionsInArea(const std::array<sf::Vector2f, 4>& area) const;
 

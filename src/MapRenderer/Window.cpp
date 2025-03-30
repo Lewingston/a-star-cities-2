@@ -122,9 +122,7 @@ void Window::onEvent(const sf::Event& event) {
 
     } else if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
 
-        if (keyPressed->code == sf::Keyboard::Key::C) {
-            resetView();
-        }
+        onKeyPressed(*keyPressed);
 
     } else if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
 
@@ -233,6 +231,13 @@ void Window::onMouseButtonReleased(const sf::Event::MouseButtonReleased& mouseBu
         leftMouseButtonPressed = false;
     } else if (mouseButton.button == sf::Mouse::Button::Right) {
         rightMouseButtonPressed = false;
+    }
+}
+
+void Window::onKeyPressed(const sf::Event::KeyPressed& keyEvent) {
+
+    if (keyEvent.code == sf::Keyboard::Key::C) {
+        resetView();
     }
 }
 

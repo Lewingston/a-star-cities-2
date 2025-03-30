@@ -276,6 +276,13 @@ void AStarWindow::onMouseButtonReleased(const sf::Event::MouseButtonReleased& mo
     Window::onMouseButtonReleased(mouseButton);
 }
 
+void AStarWindow::onKeyPressed(const sf::Event::KeyPressed& keyPressed) {
+
+    /*if (keyPressed.code == sf::Keyboard::Key::X) {
+        overlay.clear();
+    }*/
+}
+
 void AStarWindow::setRotation(float angel) {
 
     mapRotation = angel;
