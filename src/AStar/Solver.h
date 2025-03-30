@@ -48,8 +48,8 @@ namespace asc2 {
                     bool operator<(const PathNode& node) const {
                         if (node.getIntersection() == getIntersection()) {
                             return false;
-                        } else if (node.getScore() == getScore()) {
-                            return node.getIntersection() < getIntersection();
+                        /*} else if (node.getScore() == getScore()) {
+                            return node.getIntersection() < getIntersection();*/
                         } else {
                             return node.getScore() > getScore();
                         }

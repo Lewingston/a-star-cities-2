@@ -8,7 +8,6 @@
 #include <SFML/Graphics/CircleShape.hpp>
 
 #include <cmath>
-#include <iostream>
 
 using namespace asc2;
 
@@ -192,6 +191,8 @@ void Solver::doStepAndDraw(float speed, float roadPercentage) {
     LineBuffer buffer(lines, RenderConfig());
 
     buffer.draw(overlay.getCurrentTexture());
+
+    drawStartAndEndPoint(overlay.getCurrentTexture());
 }
 
 std::vector<std::reference_wrapper<const Road>> Solver::doStep(float speed, uint32_t maxRoads) {
@@ -231,7 +232,6 @@ std::vector<std::reference_wrapper<const Road>> Solver::doStep(float speed, uint
 
             break;
         }
-
     }
 
     return roads;
@@ -252,8 +252,6 @@ std::optional<Intersection::Connection> Solver::checkNextRoad() {
     if (find == nodes.end())
         throw std::runtime_error("Unable to find node in list of all nodes. Id: " + std::to_string(nextIntersectionId));
     PathNode& nextNode = find->second;
-
-    //std::cout << "Score: " << nextNode.getScore() << '\n';
 
     if (closedList.contains(nextNode)) {
         advanceConnectionIterator();
@@ -329,8 +327,6 @@ void Solver::drawPoint(const Intersection& intersection, sf::RenderTarget& targe
     };
 
     const float radius = size.x / res.x * static_cast<float>(radiusInPixels);
-
-    //const float radius = overlay.getSize().length() * 0.002f;
 
     sf::CircleShape shape(radius);
     shape.setFillColor(color);

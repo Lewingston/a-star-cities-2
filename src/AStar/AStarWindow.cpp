@@ -24,6 +24,8 @@ AStarWindow::AStarWindow(uint32_t width, uint32_t height, const std::string& tit
 
     showMapCenter = false;
     showMapBorder = false;
+
+    overlay.setFadeSpeed(fadeSpeed);
 }
 
 void AStarWindow::show(MapLoader& mapLoader, const RenderConfig& config) {
@@ -127,6 +129,7 @@ void AStarWindow::draw() {
     solver.doStepAndDraw(animationSpeed * speedMultiplier, roadPercentage / 100.0f * speedMultiplier);
 
     overlay.draw(window);
+    overlay.flip();
 }
 
 void AStarWindow::drawImGui() {
@@ -168,7 +171,7 @@ void AStarWindow::displayUi() {
 
         ImGui::InputScalar("Map rotation input:", ImGuiDataType_Float, &rotationInput);
 
-        if (mapRotation != rotationInput) {
+        if (mapRotation > rotationInput || mapRotation < rotationInput) {
             setRotation(rotationInput);
         }
 
@@ -207,6 +210,9 @@ void AStarWindow::displayUi() {
         if (ImGui::Button("Reset")) {
             solver.reset();
         }
+
+        ImGui::SliderInt("Fade speed", &fadeSpeed, 1, 100);
+        overlay.setFadeSpeed(fadeSpeed);
     }
 
     ImGui::End();

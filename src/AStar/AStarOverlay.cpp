@@ -5,11 +5,23 @@
 
 using namespace asc2;
 
+constexpr std::string_view fadeShaderCode = R"(
+
+uniform sampler2D texture;
+
+void main() {
+    vec4 pixel = texture2D(texture, gl_TexCoord[0].xy);
+    gl_FragColor = vec4(pixel.r, pixel.g, pixel.b, (pixel.a - (1.0f / 255.0f)));
+}
+)";
+
 AStarOverlay::AStarOverlay(const sf::Vector2u& size) :
     sprite1(textures[0].getTexture()),
     sprite2(textures[1].getTexture()) {
 
     setResolution(size);
+
+    loadShaders();
 }
 
 void AStarOverlay::setResolution(sf::Vector2u resolution) {
@@ -77,17 +89,43 @@ void AStarOverlay::setRotation(float rotation) {
 
 void AStarOverlay::draw(sf::RenderTarget& target) {
 
-    sf::RenderTexture& currentTexture = textures[index];
+    sf::Sprite& currentSprite = index == 0 ? sprite1 : sprite2;
+
+    target.draw(currentSprite);
+}
+
+void AStarOverlay::flip() {
+
     sf::Sprite& currentSprite = index == 0 ? sprite1 : sprite2;
 
     index = index == 0 ? 1 : 0;
 
     sf::RenderTexture& nextTexture = textures[index];
-    sf::Sprite& nextSprite = index == 0 ? sprite1 : sprite2;
 
     nextTexture.clear(sf::Color::Transparent);
-    nextTexture.draw(currentSprite);
-    nextTexture.display();
 
-    target.draw(nextSprite);
+    if (shadersAvailable && currentFadeFrame >= fadeSpeed) {
+        nextTexture.draw(currentSprite, &fadeShader);
+        currentFadeFrame = 0;
+    } else {
+        nextTexture.draw(currentSprite);
+        currentFadeFrame++;
+    }
+
+    nextTexture.display();
+}
+
+void AStarOverlay::loadShaders() {
+
+    if (!sf::Shader::isAvailable()) {
+        std::cout << "System does not support shaders!";
+        shadersAvailable = false;
+        return;
+    }
+
+    shadersAvailable = true;
+
+    if (!fadeShader.loadFromMemory(fadeShaderCode, sf::Shader::Type::Fragment)) {
+        throw std::runtime_error("Failed to load fade shader!");
+    }
 }

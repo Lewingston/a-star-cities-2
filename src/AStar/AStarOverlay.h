@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
 #include <array>
 
@@ -19,6 +20,8 @@ namespace asc2 {
             void setPosition(const sf::Vector2f& position);
             void setRotation(float rotation);
             
+            void setFadeSpeed(int speed) { fadeSpeed = speed; }
+
             void clear();
 
             sf::RenderTexture& getCurrentTexture() { return textures[index]; }
@@ -28,6 +31,8 @@ namespace asc2 {
             }
 
             void draw(sf::RenderTarget& target);
+
+            void flip();
 
             [[nodiscard]] sf::Vector2f getSize() const { return size; };
             [[nodiscard]] sf::Vector2f getPosition() const { return sprite1.getPosition(); }
@@ -39,6 +44,8 @@ namespace asc2 {
             void setResolution(sf::RenderTexture& texture, sf::Vector2u resolution) const;
             void updateSprites();
 
+            void loadShaders();
+
             std::array<sf::RenderTexture, 2> textures;
             sf::Sprite sprite1;
             sf::Sprite sprite2;
@@ -46,5 +53,11 @@ namespace asc2 {
             sf::Vector2f size;
 
             uint8_t index = 0;
+
+            bool shadersAvailable = false;
+            sf::Shader fadeShader;
+
+            int fadeSpeed = 15;
+            int currentFadeFrame = 0;
     };
 }
