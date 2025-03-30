@@ -56,6 +56,7 @@ namespace asc2 {
 
             bool shadersAvailable = false;
             sf::Shader fadeShader;
+            sf::Shader transferShader;
 
             int fadeSpeed = 15;
             int currentFadeFrame = 0;

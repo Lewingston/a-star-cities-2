@@ -134,6 +134,8 @@ void AStarWindow::draw() {
 
 void AStarWindow::drawImGui() {
 
+    //ImGui::ShowDemoWindow();
+
     if (showInfoOverlay)
         drawInfoOverlay();
 
@@ -211,7 +213,7 @@ void AStarWindow::displayUi() {
             solver.reset();
         }
 
-        ImGui::SliderInt("Fade speed", &fadeSpeed, 1, 100);
+        ImGui::InputInt("Fade speed", &fadeSpeed, 1, 100);
         overlay.setFadeSpeed(fadeSpeed);
     }
 

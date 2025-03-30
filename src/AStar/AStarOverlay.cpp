@@ -7,11 +7,13 @@ using namespace asc2;
 
 constexpr std::string_view fadeShaderCode = R"(
 
+uniform bool fade;
 uniform sampler2D texture;
 
 void main() {
     vec4 pixel = texture2D(texture, gl_TexCoord[0].xy);
-    gl_FragColor = vec4(pixel.r, pixel.g, pixel.b, (pixel.a - (1.0f / 255.0f)));
+    float red = fade ? 1.0f / 255.0f : 0.0f;
+    gl_FragColor = vec4(1.0f, 1.0f, 1.0f, pixel.a - red);
 }
 )";
 
@@ -104,12 +106,18 @@ void AStarOverlay::flip() {
 
     nextTexture.clear(sf::Color::Transparent);
 
-    if (shadersAvailable && currentFadeFrame >= fadeSpeed) {
+    if (shadersAvailable) {
+
+        currentFadeFrame++;
+
+        fadeShader.setUniform("fade", currentFadeFrame >= fadeSpeed);
         nextTexture.draw(currentSprite, &fadeShader);
-        currentFadeFrame = 0;
+
+        if (currentFadeFrame >= fadeSpeed)
+            currentFadeFrame = 0;
+
     } else {
         nextTexture.draw(currentSprite);
-        currentFadeFrame++;
     }
 
     nextTexture.display();

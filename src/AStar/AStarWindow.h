@@ -72,6 +72,6 @@ namespace asc2 {
             float animationSpeed = 75.0f;
             float roadPercentage = 100.0f / 15.0f;
             float speedMultiplier = 1.0f;
-            int fadeSpeed = 60;
+            int fadeSpeed = 1;
     };
 }
