@@ -5,7 +5,7 @@ Visualisation of A* path finding algorithm using open street map data.
 The map data can be downloaded via the [open street map API](https://wiki.openstreetmap.org/wiki/Downloading_data).
 The data must then be saved as .json file to be used by the program.
 
-Better and faster implementation of an earlier project: [GitHub](https://github.com/Lewingston/a-star-cities-2)
+Better and faster implementation of an earlier project: [GitHub](https://github.com/Lewingston/a-star-cities)
 
 Inspired by this [video](https://www.youtube.com/watch?v=CgW0HPHqFE8).
 
