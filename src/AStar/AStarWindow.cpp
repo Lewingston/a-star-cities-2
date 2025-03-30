@@ -60,6 +60,7 @@ void AStarWindow::renderMap(const Map& map, const RenderConfig& config) {
     };
 
     applyNewView(position, size, 0.0f);
+    timer = std::chrono::steady_clock::now();
 }
 
 void AStarWindow::onResize(uint32_t newWidth, uint32_t newHeight) {
@@ -67,6 +68,7 @@ void AStarWindow::onResize(uint32_t newWidth, uint32_t newHeight) {
     Window::onResize(newWidth, newHeight);
 
     resetOverlay();
+    timer = std::chrono::steady_clock::now();
 }
 
 void AStarWindow::applyNewView(sf::Vector2f center, sf::Vector2f size, float rotation) {
@@ -126,7 +128,24 @@ void AStarWindow::draw() {
     if (redrawMode)
         newOverlayBorders.draw(window);
 
-    solver.doStepAndDraw(animationSpeed * speedMultiplier, roadPercentage / 100.0f * speedMultiplier);
+    if (!solver.isSolved()) {
+
+        // wait a short time before starting the first animation
+        if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timer) >= std::chrono::seconds(2)) {
+            solver.doStepAndDraw(animationSpeed * speedMultiplier, roadPercentage / 100.0f * speedMultiplier);
+        } else {
+            solver.drawStartAndEndPoint(overlay.getCurrentTexture());
+        }
+
+        if (solver.isSolved()) {
+            solver.drawSolution();
+            timer = std::chrono::steady_clock::now();
+        }
+    // wait a view seconds before starting the next animation
+    } else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - timer) >= std::chrono::seconds(6)) {
+
+        solver.reset();
+    }
 
     overlay.draw(window);
     overlay.flip();

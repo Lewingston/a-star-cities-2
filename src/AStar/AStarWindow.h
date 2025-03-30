@@ -72,6 +72,8 @@ namespace asc2 {
             float animationSpeed = 75.0f;
             float roadPercentage = 100.0f / 15.0f;
             float speedMultiplier = 1.0f;
-            int fadeSpeed = 1;
+            int fadeSpeed = 4;
+
+            std::chrono::steady_clock::time_point timer = std::chrono::steady_clock::now();
     };
 }

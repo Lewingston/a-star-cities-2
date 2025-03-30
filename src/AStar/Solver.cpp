@@ -56,13 +56,10 @@ void Solver::restart() {
 
     solved = false;
 
-    overlay.clear();
     drawStartAndEndPoint(overlay.getCurrentTexture());
 }
 
 void Solver::selectStartAndEndNode() {
-
-    overlay.clear();
 
     const sf::Vector2f overlaySize = overlay.getSize();
 
@@ -314,6 +311,33 @@ bool Solver::selectNextNode() {
     closedList.insert(currentNode);
 
     return true;
+}
+
+void Solver::drawSolution() {
+
+    if (!solved)
+        return;
+
+    auto find = nodes.find(endPoint->getId());
+    if (find == nodes.end())
+        return;
+
+    std::vector<LineRenderer> lines;
+
+    for (const PathNode* node = &find->second; node->getPredecessor() != nullptr; node = node->getPredecessor()) {
+
+        const Road* road = node->getRoadToPredecessor();
+        if (road == nullptr)
+            break;
+
+        lines.emplace_back(road->getWay(), color);
+
+        if (node->getIntersection() == *startPoint)
+            break;
+    }
+
+    LineBuffer buffer(lines, RenderConfig());
+    buffer.draw(overlay.getCurrentTexture());
 }
 
 void Solver::drawPoint(const Intersection& intersection, sf::RenderTarget& target) {

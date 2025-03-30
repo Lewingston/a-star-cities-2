@@ -30,6 +30,8 @@ namespace asc2 {
             std::vector<std::reference_wrapper<const Road>> doStep(float speed, uint32_t maxRoads);
             void doStepAndDraw(float speed, float roadPercentage);
 
+            void drawSolution();
+
             void reset();
 
             void restart();
@@ -48,14 +50,14 @@ namespace asc2 {
                     bool operator<(const PathNode& node) const {
                         if (node.getIntersection() == getIntersection()) {
                             return false;
-                        /*} else if (node.getScore() == getScore()) {
-                            return node.getIntersection() < getIntersection();*/
                         } else {
                             return node.getScore() > getScore();
                         }
                     }
 
                     [[nodiscard]] const Intersection& getIntersection() const noexcept { return intersection; }
+                    [[nodiscard]] const Road* getRoadToPredecessor() const noexcept { return roadToPrev; }
+                    [[nodiscard]] const PathNode* getPredecessor() const noexcept { return prevNode; }
 
                     [[nodiscard]] double getDistanceToTarget() const noexcept { return distanceToTarget; }
                     [[nodiscard]] double getDistanceTraveled() const noexcept { return distanceTraveled; }
