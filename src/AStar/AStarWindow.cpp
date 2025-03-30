@@ -17,10 +17,11 @@
 
 using namespace asc2;
 
-AStarWindow::AStarWindow(uint32_t width, uint32_t height, const std::string& title) :
+AStarWindow::AStarWindow(uint32_t width, uint32_t height, const std::string& title, bool interactive) :
     Window(width, height, title),
     overlay(sf::Vector2u(width, height)),
-    solver(overlay, nullptr) {
+    solver(overlay, nullptr),
+    interactive(interactive) {
 
     showMapCenter = false;
     showMapBorder = false;
@@ -153,7 +154,8 @@ void AStarWindow::draw() {
 
 void AStarWindow::drawImGui() {
 
-    //ImGui::ShowDemoWindow();
+    if (!interactive)
+        return;
 
     if (showInfoOverlay)
         drawInfoOverlay();

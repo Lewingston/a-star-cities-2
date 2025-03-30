@@ -69,9 +69,10 @@ void loadMapWithWindowPrepareForAStar(const std::string& filePath, Window& windo
 
 int main(int argc, const char** args) {
 
-    std::string filePath = "../../maps/roads_only/speyer.json";
+    //std::string filePath = "../../maps/roads_only/new_york.json";
+    std::string filePath;
 
-    std::string mode = "astar";
+    std::string mode = "normal";
 
     if (argc == 2) {
         filePath = std::string(args[1]);
@@ -81,20 +82,14 @@ int main(int argc, const char** args) {
     }
 
     if (mode == "normal") {
-        Window window(1600, 900, ProgramInfo::name);
-        loadMapWithWindow(filePath, window);
-    } else if (mode == "astar") {
-        AStarWindow window(1600, 900, ProgramInfo::name);
+        AStarWindow window(1600, 900, ProgramInfo::name, false);
         loadMapWithWindowPrepareForAStar(filePath, window, aStarRenderConfig);
-    } else if (mode == "astar_intersections") {
-        RenderConfig config = aStarRenderConfig;
-        config.randomColors = true;
-        config.renderIntersections = true;
-        AStarWindow window(1600, 900, ProgramInfo::name);
-        loadMapWithWindowPrepareForAStar(filePath, window, config);
+    } else if (mode == "interactive") {
+        AStarWindow window(1600, 900, ProgramInfo::name, true);
+        loadMapWithWindowPrepareForAStar(filePath, window, aStarRenderConfig);
     } else {
         std::cout << "Available modes:\n";
-        std::cout << "    norlam\n    astar\n    aster_intersections\n";
+        std::cout << "    normal\n    interactive\n";
         return 1;
     }
 

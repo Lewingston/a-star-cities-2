@@ -14,7 +14,7 @@ namespace asc2 {
 
         public:
 
-            AStarWindow(uint32_t width, uint32_t height, const std::string& title);
+            AStarWindow(uint32_t width, uint32_t height, const std::string& title, bool interactive);
 
             void show() override { Window::show(); }
             void show(MapLoader& mpaLoader, const RenderConfig& config) override;
@@ -69,11 +69,13 @@ namespace asc2 {
             sf::Vector2f startPoint;
             sf::Vector2f endPoint;
 
-            float animationSpeed = 75.0f;
-            float roadPercentage = 100.0f / 15.0f;
+            float animationSpeed = 150.0f;
+            float roadPercentage = 100.0f / 10.0f;
             float speedMultiplier = 1.0f;
-            int fadeSpeed = 4;
+            int fadeSpeed = 6;
 
             std::chrono::steady_clock::time_point timer = std::chrono::steady_clock::now();
+
+            bool interactive;
     };
 }
